@@ -1,30 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0c1014;
-  --color-surface: #151b22;
-  --color-elevated: #1c242d;
-  --color-fg: #eef2f0;
-  --color-muted: #8b9690;
-  --color-subtle: #66716c;
-  --color-border: #2a343c;
-  --color-accent: #8eb3a8;
-  --color-accent-fg: #0c1014;
-  --color-correct: #3d9a6a;
-  --color-correct-dim: #1c3d2c;
-  --color-wrong: #c45c5c;
-  --color-wrong-dim: #3d1e1e;
-  --color-option-a: #c46a4a;
-  --color-option-b: #4a7eab;
-  --color-option-c: #2f8a68;
-  --color-option-d: #b04d58;
-  --font-display: "Fraunces", "Times New Roman", serif;
-  --font-sans: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --color-bg: #f3efe6;
+  --color-surface: #faf8f3;
+  --color-elevated: #ffffff;
+  --color-fg: #1c1915;
+  --color-muted: #6e6860;
+  --color-subtle: #8a847c;
+  --color-border: #ddd6cb;
+  --color-accent: #3d5c56;
+  --color-accent-fg: #f3efe6;
+  --color-correct: #2f6b45;
+  --color-correct-dim: #e4efe7;
+  --color-wrong: #9a3f35;
+  --color-wrong-dim: #f4e6e3;
+  --font-display: "Source Serif 4", "Times New Roman", serif;
+  --font-sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 28px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #161412;
+  --color-surface: #1e1b18;
+  --color-elevated: #26221e;
+  --color-fg: #f3efe6;
+  --color-muted: #a39b91;
+  --color-subtle: #7d766c;
+  --color-border: #3a342e;
+  --color-accent: #9bb5ae;
+  --color-accent-fg: #161412;
+  --color-correct: #7dba90;
+  --color-correct-dim: #1d3226;
+  --color-wrong: #d08980;
+  --color-wrong-dim: #3a221f;
 }
 
 @layer base {
@@ -51,7 +69,7 @@
   h3 {
     font-family: var(--font-display);
     text-wrap: balance;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
   }
 
   p {

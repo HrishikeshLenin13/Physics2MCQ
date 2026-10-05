@@ -1,26 +1,25 @@
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   Check,
+  Moon,
   RotateCcw,
+  Sun,
   X,
-  Zap,
 } from "lucide-react";
 import { QUESTIONS, LETTERS, TOTAL } from "@/data/questions";
 import { Button } from "@/components/ui/button";
 import { QuestionDiagram } from "@/components/quiz/diagrams";
 import { scoreOf, useQuiz } from "@/store/quiz";
+import { useTheme } from "@/store/theme";
 import { cn } from "@/lib/utils";
 
-const OPTION_BG = [
-  "bg-option-a",
-  "bg-option-b",
-  "bg-option-c",
-  "bg-option-d",
-] as const;
-
 export function QuizApp() {
+  const theme = useTheme((s) => s.theme);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
   const phase = useQuiz((s) => s.phase);
   if (phase === "start") return <StartScreen />;
   if (phase === "results") return <ResultsScreen />;
@@ -28,10 +27,33 @@ export function QuizApp() {
   return <QuizScreen />;
 }
 
+function ThemeToggle() {
+  const theme = useTheme((s) => s.theme);
+  const toggle = useTheme((s) => s.toggle);
+  const dark = theme === "dark";
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="inline-flex h-11 min-h-11 items-center gap-2 rounded-md border border-border bg-elevated px-3 text-sm text-fg transition-colors duration-150 hover:bg-surface"
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+    >
+      {dark ? <Sun className="size-4" strokeWidth={1.75} /> : <Moon className="size-4" strokeWidth={1.75} />}
+      <span className="hidden sm:inline">{dark ? "Light" : "Dark"}</span>
+    </button>
+  );
+}
+
 function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh bg-bg text-fg">
-      <div className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-5 sm:px-6 sm:py-8">
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">
+            AP Physics 2
+          </p>
+          <ThemeToggle />
+        </div>
         {children}
       </div>
     </div>
@@ -44,24 +66,21 @@ function StartScreen() {
     <Shell>
       <div className="flex flex-1 flex-col justify-center gap-8">
         <p className="text-xs font-medium tracking-[0.18em] text-muted uppercase">
-          Unit 02.10
+          Unit 03.11
         </p>
         <div className="space-y-3">
           <h1 className="font-display text-4xl leading-tight text-fg sm:text-5xl">
-            Electric Force, Fields, and Potential
+            Current and Circuits
           </h1>
           <p className="max-w-lg text-base text-muted">
-            57 multiple-choice questions in original order. Tap an answer, then
-            continue. After the last question you will see your score, review
-            every item, and retest as many times as you want.
+            Fifty multiple-choice questions in original order. Choose an answer,
+            then continue. After the last question you can review every item and
+            retest as many times as you want.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
           <span className="rounded-md border border-border bg-surface px-3 py-1.5">
             {TOTAL} questions
-          </span>
-          <span className="rounded-md border border-border bg-surface px-3 py-1.5">
-            Click to choose
           </span>
           <span className="rounded-md border border-border bg-surface px-3 py-1.5">
             Review + retest
@@ -70,11 +89,46 @@ function StartScreen() {
         <div>
           <Button size="lg" onClick={() => start(false)} className="min-w-44">
             Start quiz
-            <Zap className="size-4" strokeWidth={1.75} />
+            <ArrowRight className="size-4" strokeWidth={1.75} />
           </Button>
         </div>
       </div>
     </Shell>
+  );
+}
+
+function OptionButton({
+  index,
+  label,
+  selected,
+  onSelect,
+}: {
+  index: number;
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "flex min-h-12 items-start gap-3 rounded-md border px-3.5 py-3 text-left text-sm leading-snug transition-colors duration-150",
+        selected
+          ? "border-fg bg-fg text-bg"
+          : "border-border bg-elevated text-fg hover:border-fg/40",
+      )}
+    >
+      <span
+        className={cn(
+          "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm text-xs font-semibold",
+          selected ? "bg-bg/15 text-bg" : "bg-surface text-muted",
+        )}
+      >
+        {LETTERS[index]}
+      </span>
+      <span className="pt-0.5">{label}</span>
+    </button>
   );
 }
 
@@ -94,44 +148,33 @@ function QuizScreen() {
 
   return (
     <Shell>
-      <header className="mb-6 flex items-center justify-between gap-3">
+      <header className="mb-4 flex items-center justify-between gap-3">
         <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">
           Question {index + 1} of {activeIds.length}
         </p>
-        <p className="tabular-nums text-xs text-muted">#{question.id}</p>
+        <p className="tabular-nums text-xs text-subtle">#{question.id}</p>
       </header>
-      <div className="mb-6 h-1 overflow-hidden rounded-full bg-elevated">
+      <div className="mb-6 h-px overflow-hidden bg-border">
         <div
-          className="h-full bg-accent transition-all duration-200"
+          className="h-full bg-fg transition-all duration-200"
           style={{ width: `${Math.min(progress, 100)}%` }}
         />
       </div>
-      <div className="flex flex-1 flex-col gap-5">
+      <div className="flex flex-col gap-5">
         {question.diagram ? <QuestionDiagram id={question.diagram} /> : null}
         <h2 className="font-display text-xl leading-snug text-fg sm:text-2xl">
           {question.prompt}
         </h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {question.choices.map((choice, i) => {
-            const selected = chosen === i;
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => select(i)}
-                className={cn(
-                  "flex min-h-16 items-start gap-3 rounded-lg px-4 py-3.5 text-left text-sm leading-snug text-fg transition-transform duration-150",
-                  OPTION_BG[i],
-                  selected ? "ring-2 ring-fg ring-offset-2 ring-offset-bg" : "opacity-95 hover:opacity-100",
-                )}
-              >
-                <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm bg-bg/20 font-semibold">
-                  {LETTERS[i]}
-                </span>
-                <span className="pt-0.5">{choice}</span>
-              </button>
-            );
-          })}
+        <div className="grid grid-cols-1 gap-2.5">
+          {question.choices.map((choice, i) => (
+            <OptionButton
+              key={i}
+              index={i}
+              label={choice}
+              selected={chosen === i}
+              onSelect={() => select(i)}
+            />
+          ))}
         </div>
       </div>
       <footer className="mt-8 flex items-center justify-between gap-3">
@@ -170,7 +213,7 @@ function ResultsScreen() {
           </p>
           <p className="mt-3 text-lg text-muted">{pct}% correct</p>
         </div>
-        <div className="grid grid-cols-2 gap-3 max-w-sm">
+        <div className="grid max-w-sm grid-cols-2 gap-3">
           <div className="rounded-lg border border-border bg-surface px-4 py-3">
             <p className="text-xs text-muted">Right</p>
             <p className="mt-1 font-display text-2xl tabular-nums text-correct">{correct}</p>
@@ -306,7 +349,7 @@ function ReviewScreen() {
 
       <h2 className="mt-4 font-display text-xl leading-snug">{current.prompt}</h2>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-2.5">
         {current.choices.map((choice, i) => {
           const isAns = i === current.answer;
           const isPick = i === chosen;
@@ -314,18 +357,18 @@ function ReviewScreen() {
             <div
               key={i}
               className={cn(
-                "flex min-h-16 items-start gap-3 rounded-lg px-4 py-3.5 text-sm text-fg",
-                OPTION_BG[i],
-                isAns && "ring-2 ring-correct ring-offset-2 ring-offset-bg",
-                isPick && !isAns && "ring-2 ring-wrong ring-offset-2 ring-offset-bg",
+                "flex min-h-12 items-start gap-3 rounded-md border px-3.5 py-3 text-sm",
+                isAns && "border-correct bg-correct-dim text-fg",
+                isPick && !isAns && "border-wrong bg-wrong-dim text-fg",
+                !isAns && !isPick && "border-border bg-elevated text-fg",
               )}
             >
-              <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm bg-bg/20 font-semibold">
+              <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm bg-bg/40 text-xs font-semibold">
                 {LETTERS[i]}
               </span>
               <span className="flex-1 pt-0.5">{choice}</span>
-              {isAns ? <Check className="mt-1 size-4 shrink-0" /> : null}
-              {isPick && !isAns ? <X className="mt-1 size-4 shrink-0" /> : null}
+              {isAns ? <Check className="mt-1 size-4 shrink-0 text-correct" /> : null}
+              {isPick && !isAns ? <X className="mt-1 size-4 shrink-0 text-wrong" /> : null}
             </div>
           );
         })}

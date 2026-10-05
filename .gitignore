@@ -10,3 +10,6 @@ dist
 screenshots
 .pglite
 *.local
+attachments/circuits-pages/
+graphify-out/
+.aider*

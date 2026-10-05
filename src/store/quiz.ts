@@ -97,7 +97,7 @@ export const useQuiz = create<QuizState>()(
         }),
     }),
     {
-      name: "charge-review-quiz",
+      name: "circuits-quiz",
       storage: createJSONStorage(() => {
         if (typeof window === "undefined") {
           return {
