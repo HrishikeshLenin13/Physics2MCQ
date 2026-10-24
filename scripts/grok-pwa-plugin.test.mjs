@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import test from "node:test";
+import test, { after } from "node:test";
 import {
   appNameFromHost,
-  createHeadInjector,
+  createHeadInjector as createHeadInjectorRaw,
   grokXCreatorHeadTags,
-  injectGrokPwaHead,
+  injectGrokPwaHead as injectGrokPwaHeadRaw,
   isDocumentPath,
   isInstallQuery,
   publicAppHost,
@@ -18,6 +18,13 @@ import {
   stripInstallParams,
 } from "./grok-pwa-shared.mjs";
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
+
+// Most cases exercise fallback identity, not the checked-in site's title/card.
+// Explicit fixture cwd values still override this empty default.
+const EMPTY_ROOT = mkdtempSync(join(tmpdir(), "grok-pwa-isolated-"));
+after(() => rmSync(EMPTY_ROOT, { recursive: true, force: true }));
+const injectGrokPwaHead = (html, options = {}) => injectGrokPwaHeadRaw(html, { cwd: EMPTY_ROOT, ...options });
+const createHeadInjector = (options = {}) => createHeadInjectorRaw({ cwd: EMPTY_ROOT, ...options });
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
