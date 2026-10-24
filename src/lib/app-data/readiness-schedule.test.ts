@@ -16,6 +16,11 @@ describe("readinessProbeDelayMs", () => {
     );
   });
 
+  it("normalizes fractional and non-finite attempts", () => {
+    assert.equal(readinessProbeDelayMs(1.8), 2_000);
+    for (const value of [NaN, Infinity, -Infinity]) assert.equal(readinessProbeDelayMs(value), 1_000);
+  });
+
   it("clamps a negative attempt to the first delay", () => {
     assert.equal(readinessProbeDelayMs(-3), READINESS_PROBE_DELAYS_MS[0]);
   });

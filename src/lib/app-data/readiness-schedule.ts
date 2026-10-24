@@ -4,7 +4,7 @@ export const READINESS_PROBE_MAX_TOTAL_MS = 3 * 60_000;
 
 export function readinessProbeDelayMs(attempt: number): number {
   const index = Math.min(
-    Math.max(attempt, 0),
+    Number.isFinite(attempt) ? Math.max(Math.floor(attempt), 0) : 0,
     READINESS_PROBE_DELAYS_MS.length - 1,
   );
   return READINESS_PROBE_DELAYS_MS[index];
