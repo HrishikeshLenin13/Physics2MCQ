@@ -126,3 +126,7 @@ const a=[0,0,null],right=api.reviewQuestionIds(q,a,'right'),wrong=api.reviewQues
 test("unanswered-filter-is-a-subset-of-missed", () => {
 assert.deepEqual(api.reviewQuestionIds(q,[0,0,null],'unanswered'),[3]);assert.deepEqual(api.reviewQuestionIds(q,[0,0,null],'all'),[1,2,3]);
 });
+
+test("selection-copies-rather-than-mutates-answer-arrays", () => {
+const a=[null,null,null],b=api.selectQuizAnswer(a,1,1,3,2);assert.deepEqual(a,[null,null,null]);assert.deepEqual(b,[null,1,null]);
+});
