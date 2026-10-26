@@ -74,3 +74,7 @@ assert.throws(()=>api.buildQuizReport([{...q[0],answer:.5}],[]),RangeError);
 test("reject-past-last-key", () => {
 assert.throws(()=>api.buildQuizReport([{...q[0],answer:2}],[]),RangeError);
 });
+
+test("empty-choice-lists-are-not-scoreable", () => {
+assert.throws(()=>api.buildQuizReport([{...q[0],choices:[]}],[]),RangeError);
+});
