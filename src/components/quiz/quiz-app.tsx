@@ -1,4 +1,4 @@
-import { downloadQuizReport } from "../../lib/quiz-report";
+import { downloadQuizReport, reviewQuestionIds } from "../../lib/quiz-report";
 import { useEffect, useMemo, type ReactNode } from "react";
 import {
   ArrowLeft,
@@ -260,12 +260,8 @@ function ReviewScreen() {
   const finish = useQuiz((s) => s.finish);
 
   const items = useMemo(() => {
-    return QUESTIONS.filter((q, i) => {
-      const ok = answers[i] === q.answer;
-      if (filter === "wrong") return !ok;
-      if (filter === "right") return ok;
-      return true;
-    });
+    const ids = new Set(reviewQuestionIds(QUESTIONS,answers,filter));
+    return QUESTIONS.filter(question=>ids.has(question.id));
   }, [answers, filter]);
 
   const current = items[reviewIndex] ?? items[0];

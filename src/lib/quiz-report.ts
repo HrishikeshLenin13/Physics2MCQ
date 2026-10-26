@@ -38,3 +38,7 @@ export function selectQuizAnswer(answers: ReadonlyArray<number|null>, slot:numbe
   const next=Array.from({length:total},(_,index)=>answers[index] ?? null);
   next[slot]=choice;return next;
 }
+
+export function reviewQuestionIds(questions: readonly QuizQuestion[], answers: ReadonlyArray<number|null>, filter:'all'|'wrong'|'right'):number[] {
+  return buildQuizReport(questions,answers).results.filter(result=>filter==='all' || (filter==='right' ? result.status==='correct' : result.status!=='correct')).map(result=>result.questionId);
+}
