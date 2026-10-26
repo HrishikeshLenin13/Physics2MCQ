@@ -32,3 +32,9 @@ export function quizReportCsv(questions: readonly QuizQuestion[], answers: Reado
   for(const result of report.results) rows.push([result.questionId,result.selectedChoice ?? '',result.status]);
   return rows.map(row=>row.map(value=>'"'+String(value).replace(/"/g,'""')+'"').join(',')).join('\r\n')+'\r\n';
 }
+
+export function selectQuizAnswer(answers: ReadonlyArray<number|null>, slot:number, choice:number, total:number, choices:number): Array<number|null> {
+  if (![slot,choice,total,choices].every(Number.isSafeInteger) || slot < 0 || slot >= total || choice < 0 || choice >= choices) return answers.slice();
+  const next=Array.from({length:total},(_,index)=>answers[index] ?? null);
+  next[slot]=choice;return next;
+}

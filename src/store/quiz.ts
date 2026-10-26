@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { buildQuizReport } from "../lib/quiz-report";
+import { buildQuizReport, selectQuizAnswer } from "../lib/quiz-report";
 import { QUESTIONS, TOTAL } from "@/data/questions";
 
 export type Phase = "start" | "quiz" | "results" | "review";
@@ -69,8 +69,7 @@ export const useQuiz = create<QuizState>()(
         const qid = activeIds[index];
         if (!qid) return;
         const slot = qid - 1;
-        const next = answers.slice();
-        next[slot] = choice;
+        const next = selectQuizAnswer(answers,slot,choice,TOTAL,QUESTIONS[slot]?.choices.length ?? 0);
         set({ answers: next });
       },
       next: () => {
