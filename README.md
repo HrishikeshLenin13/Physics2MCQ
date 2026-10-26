@@ -35,3 +35,7 @@ npm run typecheck
 ## Data and limitations
 
 Quiz selections are saved in this browser. Clearing site storage resets them. The JSON download is a personal review aid, not an official grade record. The checked-in questions and solutions should be reviewed by an instructor before high-stakes use.
+
+## Developer resources
+
+- [Feature usage and API contracts](docs/RECENT_IMPROVEMENTS.md)
