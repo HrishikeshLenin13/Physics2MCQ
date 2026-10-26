@@ -86,3 +86,7 @@ const r=api.buildQuizReport(q,[0,1,0],[]);assert.equal(r.summary.total,0);assert
 test("scope-keeps-bank-order-not-request-order", () => {
 assert.deepEqual(api.buildQuizReport(q,[0,1,0],[3,1]).results.map(x=>x.questionId),[1,3]);
 });
+
+test("scope-does-not-reindex-sparse-answers", () => {
+const r=api.buildQuizReport(q,[0,1,null],[2,3]);assert.equal(r.results[0].selectedChoice,1);assert.equal(r.results[1].selectedChoice,null);
+});
