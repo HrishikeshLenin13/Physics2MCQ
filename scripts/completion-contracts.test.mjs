@@ -146,3 +146,7 @@ const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0.5,0,3,2),a);
 test("selection-rejects-invalid-choice", () => {
 const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0,2,3,2),a);
 });
+
+test("selection-rejects-empty-choices", () => {
+const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0,0,3,0),a);
+});
