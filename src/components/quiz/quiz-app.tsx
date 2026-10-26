@@ -228,6 +228,7 @@ function ResultsScreen() {
           <Button size="lg" variant="secondary" onClick={() => downloadQuizReport(QUESTIONS, answers)}>
             Download review
           </Button>
+          <Button size="lg" variant="secondary" onClick={() => downloadQuizReport(QUESTIONS, answers, "csv")}>Download CSV</Button>
           <Button size="lg" onClick={openReview}>
             Review answers
           </Button>
