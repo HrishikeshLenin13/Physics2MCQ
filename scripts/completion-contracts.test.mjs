@@ -170,3 +170,7 @@ const a=[0,1];for(const i of [-1,2,.5,NaN]){const b=api.clearQuizAnswer(a,i);ass
 test("csv-identifies-zero-based-choice-columns", () => {
 const csv=api.quizReportCsv(q,[0,1,null]);assert.ok(csv.startsWith('"Question ID","Selected choice (zero-based)"'));assert.ok(csv.includes('"3","","unanswered"'));
 });
+
+test("csv-has-consistent-crlf-record-termination", () => {
+const csv=api.quizReportCsv(q,[0,1,0]);assert.ok(csv.endsWith('\r\n'));assert.equal(csv.split('\r\n').length,5);
+});
