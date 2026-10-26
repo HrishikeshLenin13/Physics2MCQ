@@ -114,3 +114,7 @@ const before=JSON.stringify(q);api.buildQuizReport(q,[0,1,0]);assert.equal(JSON.
 test("reports-do-not-alias-saved-answers", () => {
 const a=[0,1,0],r=api.buildQuizReport(q,a);a[0]=1;assert.equal(r.results[0].selectedChoice,0);
 });
+
+test("reports-export-status-not-answer-keys", () => {
+const r=api.buildQuizReport(q,[0,1,0]);assert.ok(r.results.every(x=>!('answer' in x)&&!('choices' in x)));assert.equal(r.schemaVersion,1);
+});
