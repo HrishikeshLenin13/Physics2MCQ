@@ -58,3 +58,7 @@ assert.throws(()=>api.buildQuizReport([{...q[0],id:.5}],[]),RangeError);
 test("reject-unsafe-id", () => {
 assert.throws(()=>api.buildQuizReport([{...q[0],id:Number.MAX_SAFE_INTEGER+1}],[]),RangeError);
 });
+
+test("reject-nonfinite-id", () => {
+assert.throws(()=>api.buildQuizReport([{...q[0],id:Infinity}],[]),RangeError);
+});
