@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { buildQuizReport, selectQuizAnswer } from "../lib/quiz-report";
+import { buildQuizReport, selectQuizAnswer, clearQuizAnswer } from "../lib/quiz-report";
 import { QUESTIONS, TOTAL } from "@/data/questions";
 
 export type Phase = "start" | "quiz" | "results" | "review";
@@ -16,6 +16,7 @@ type QuizState = {
   activeIds: number[];
   start: (missedOnly?: boolean) => void;
   select: (choice: number) => void;
+  clearAnswer: () => void;
   next: () => void;
   prev: () => void;
   finish: () => void;
@@ -71,6 +72,11 @@ export const useQuiz = create<QuizState>()(
         const slot = qid - 1;
         const next = selectQuizAnswer(answers,slot,choice,TOTAL,QUESTIONS[slot]?.choices.length ?? 0);
         set({ answers: next });
+      },
+      clearAnswer: () => {
+        const {activeIds,index,answers}=get();
+        const slot=QUESTIONS.findIndex(question=>question.id===activeIds[index]);
+        set({answers:clearQuizAnswer(answers,slot)});
       },
       next: () => {
         const { index, activeIds } = get();

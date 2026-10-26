@@ -138,6 +138,7 @@ function QuizScreen() {
   const activeIds = useQuiz((s) => s.activeIds);
   const answers = useQuiz((s) => s.answers);
   const select = useQuiz((s) => s.select);
+  const clearAnswer = useQuiz((s) => s.clearAnswer);
   const next = useQuiz((s) => s.next);
   const prev = useQuiz((s) => s.prev);
 
@@ -183,6 +184,7 @@ function QuizScreen() {
           <ArrowLeft className="size-4" />
           Back
         </Button>
+        <Button variant="ghost" onClick={clearAnswer} disabled={chosen === null}>Clear answer</Button>
         <Button onClick={next} disabled={chosen === null}>
           {last ? "See score" : "Next"}
           <ArrowRight className="size-4" />

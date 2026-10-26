@@ -42,3 +42,9 @@ export function selectQuizAnswer(answers: ReadonlyArray<number|null>, slot:numbe
 export function reviewQuestionIds(questions: readonly QuizQuestion[], answers: ReadonlyArray<number|null>, filter:'all'|'wrong'|'right'):number[] {
   return buildQuizReport(questions,answers).results.filter(result=>filter==='all' || (filter==='right' ? result.status==='correct' : result.status!=='correct')).map(result=>result.questionId);
 }
+
+export function clearQuizAnswer(answers: ReadonlyArray<number|null>, slot: number): Array<number|null> {
+  const next=answers.slice();
+  if (Number.isSafeInteger(slot) && slot>=0 && slot<next.length) next[slot]=null;
+  return next;
+}
