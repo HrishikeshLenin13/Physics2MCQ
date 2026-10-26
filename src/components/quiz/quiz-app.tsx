@@ -1,3 +1,4 @@
+import { downloadQuizReport } from "../../lib/quiz-report";
 import { useEffect, useMemo, type ReactNode } from "react";
 import {
   ArrowLeft,
@@ -224,6 +225,9 @@ function ResultsScreen() {
           </div>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
+          <Button size="lg" variant="secondary" onClick={() => downloadQuizReport(QUESTIONS, answers)}>
+            Download review
+          </Button>
           <Button size="lg" onClick={openReview}>
             Review answers
           </Button>

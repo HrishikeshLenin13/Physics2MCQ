@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { buildQuizReport } from "../lib/quiz-report";
 import { QUESTIONS, TOTAL } from "@/data/questions";
 
 export type Phase = "start" | "quiz" | "results" | "review";
@@ -113,12 +114,6 @@ export const useQuiz = create<QuizState>()(
 );
 
 export function scoreOf(answers: Array<number | null>) {
-  let correct = 0;
-  let answered = 0;
-  QUESTIONS.forEach((q, i) => {
-    if (answers[i] === null) return;
-    answered += 1;
-    if (answers[i] === q.answer) correct += 1;
-  });
-  return { correct, answered, total: TOTAL };
+  const { correct, answered, total } = buildQuizReport(QUESTIONS, answers).summary;
+  return { correct, answered, total };
 }
