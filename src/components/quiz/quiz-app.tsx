@@ -1,4 +1,4 @@
-import { downloadQuizReport, reviewQuestionIds } from "../../lib/quiz-report";
+import { downloadQuizReport, reviewQuestionIds, buildQuizReport } from "../../lib/quiz-report";
 import { useEffect, useMemo, type ReactNode } from "react";
 import {
   ArrowLeft,
@@ -200,7 +200,7 @@ function ResultsScreen() {
   const start = useQuiz((s) => s.start);
   const openReview = useQuiz((s) => s.openReview);
   const reset = useQuiz((s) => s.reset);
-  const { correct, total } = scoreOf(answers);
+  const { correct, answered, total } = scoreOf(answers);
   const missed = total - correct;
   const pct = Math.round((correct / total) * 100);
 
@@ -217,14 +217,18 @@ function ResultsScreen() {
           </p>
           <p className="mt-3 text-lg text-muted">{pct}% correct</p>
         </div>
-        <div className="grid max-w-sm grid-cols-2 gap-3">
+        <div className="grid max-w-lg grid-cols-3 gap-3">
           <div className="rounded-lg border border-border bg-surface px-4 py-3">
             <p className="text-xs text-muted">Right</p>
             <p className="mt-1 font-display text-2xl tabular-nums text-correct">{correct}</p>
           </div>
           <div className="rounded-lg border border-border bg-surface px-4 py-3">
             <p className="text-xs text-muted">Wrong</p>
-            <p className="mt-1 font-display text-2xl tabular-nums text-wrong">{missed}</p>
+            <p className="mt-1 font-display text-2xl tabular-nums text-wrong">{answered-correct}</p>
+          </div>
+          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+            <p className="text-xs text-muted">Unanswered</p>
+            <p className="mt-1 font-display text-2xl tabular-nums">{total-answered}</p>
           </div>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -282,7 +286,8 @@ function ReviewScreen() {
   }
 
   const chosen = answers[current.id - 1];
-  const isCorrect = chosen === current.answer;
+  const currentStatus = buildQuizReport(QUESTIONS,answers).results.find(result=>result.questionId===current.id)!.status;
+  const isCorrect = currentStatus === "correct";
 
   return (
     <Shell>
@@ -324,7 +329,7 @@ function ReviewScreen() {
                 ok ? "bg-correct-dim text-correct" : "bg-wrong-dim text-wrong",
                 active && "ring-2 ring-fg",
               )}
-              aria-label={`Question ${q.id}, ${ok ? "correct" : "incorrect"}`}
+              aria-label={`Question ${q.id}, ${ok ? "correct" : answers[i] === null || answers[i] === undefined ? "unanswered" : "incorrect"}`}
             >
               {q.id}
             </button>
@@ -339,7 +344,7 @@ function ReviewScreen() {
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 text-wrong">
-            <X className="size-4" /> Incorrect
+            <X className="size-4" /> {currentStatus === "unanswered" ? "Unanswered" : "Incorrect"}
           </span>
         )}
         <span className="text-muted">Question {current.id}</span>
