@@ -178,3 +178,7 @@ const csv=api.quizReportCsv(q,[0,1,0]);assert.ok(csv.endsWith('\r\n'));assert.eq
 test("csv-scope-excludes-unselected-records", () => {
 const csv=api.quizReportCsv(q,[0,1,0],[2]);assert.equal(csv.trim().split('\r\n').length,2);assert.ok(csv.includes('"2","1","correct"'));
 });
+
+test("rounding-to-whole-percent-does-not-alter-correct-count", () => {
+const r=api.buildQuizReport(q,[0,null,null]);assert.equal(r.summary.percentage,33);assert.equal(r.summary.correct,1);
+});
