@@ -50,3 +50,7 @@ const r=api.buildQuizReport([{...q[0],id:99},{...q[1],id:7}],[0,1]);assert.deepE
 test("duplicate-question-ids-fail-before-scoring", () => {
 assert.throws(()=>api.buildQuizReport([q[0],q[0]],[0,0]),RangeError);
 });
+
+test("reject-fractional-id", () => {
+assert.throws(()=>api.buildQuizReport([{...q[0],id:.5}],[]),RangeError);
+});
