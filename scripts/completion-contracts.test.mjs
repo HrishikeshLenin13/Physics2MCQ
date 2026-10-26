@@ -138,3 +138,7 @@ const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,-1,0,3,2),a);
 test("selection-rejects-outside-slot", () => {
 const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,3,0,3,2),a);
 });
+
+test("selection-rejects-fractional-slot", () => {
+const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0.5,0,3,2),a);
+});
