@@ -18,3 +18,7 @@ const r=api.buildQuizReport(q,[1,0,1]);assert.equal(r.summary.answered,3);assert
 test("missing-answer-slots-remain-unanswered", () => {
 assert.equal(api.buildQuizReport(q,[]).summary.unanswered,3);assert.equal(api.buildQuizReport(q,[0]).summary.unanswered,2);
 });
+
+test("saved-negative-choices-are-not-scored", () => {
+assert.ok(api.buildQuizReport(q,[-1,-1,-1]).results.every(r=>r.status==='unanswered'));
+});
