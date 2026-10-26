@@ -26,3 +26,7 @@ assert.ok(api.buildQuizReport(q,[-1,-1,-1]).results.every(r=>r.status==='unanswe
 test("saved-fractional-choices-are-not-scored", () => {
 assert.ok(api.buildQuizReport(q,[.5,.5,.5]).results.every(r=>r.status==='unanswered'));
 });
+
+test("saved-nonfinite-choices-are-not-scored", () => {
+assert.ok(api.buildQuizReport(q,[Infinity,Infinity,Infinity]).results.every(r=>r.status==='unanswered'));
+});
