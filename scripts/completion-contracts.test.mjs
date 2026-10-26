@@ -66,3 +66,7 @@ assert.throws(()=>api.buildQuizReport([{...q[0],id:Infinity}],[]),RangeError);
 test("reject-negative-key", () => {
 assert.throws(()=>api.buildQuizReport([{...q[0],answer:-1}],[]),RangeError);
 });
+
+test("reject-fractional-key", () => {
+assert.throws(()=>api.buildQuizReport([{...q[0],answer:.5}],[]),RangeError);
+});
