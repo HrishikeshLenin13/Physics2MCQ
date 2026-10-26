@@ -22,3 +22,7 @@ assert.equal(api.buildQuizReport(q,[]).summary.unanswered,3);assert.equal(api.bu
 test("saved-negative-choices-are-not-scored", () => {
 assert.ok(api.buildQuizReport(q,[-1,-1,-1]).results.every(r=>r.status==='unanswered'));
 });
+
+test("saved-fractional-choices-are-not-scored", () => {
+assert.ok(api.buildQuizReport(q,[.5,.5,.5]).results.every(r=>r.status==='unanswered'));
+});
