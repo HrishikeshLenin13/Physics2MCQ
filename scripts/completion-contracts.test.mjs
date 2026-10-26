@@ -150,3 +150,7 @@ const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0,2,3,2),a);
 test("selection-rejects-empty-choices", () => {
 const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0,0,3,0),a);
 });
+
+test("selection-pads-short-previous-arrays-with-unanswered", () => {
+assert.deepEqual(api.selectQuizAnswer([],2,1,3,2),[null,null,1]);
+});
