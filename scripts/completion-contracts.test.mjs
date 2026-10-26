@@ -106,3 +106,7 @@ assert.equal(api.buildQuizReport(q,[0,0,0],[1,2]).summary.percentage,50);
 test("scoped-export-still-validates-unselected-bank-records", () => {
 assert.throws(()=>api.buildQuizReport([...q,{...q[0]}],[],[]),RangeError);
 });
+
+test("reports-do-not-mutate-the-question-bank", () => {
+const before=JSON.stringify(q);api.buildQuizReport(q,[0,1,0]);assert.equal(JSON.stringify(q),before);
+});
