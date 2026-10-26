@@ -38,3 +38,7 @@ assert.ok(api.buildQuizReport(q,['0','0','0']).results.every(r=>r.status==='unan
 test("saved-boolean-choices-are-not-scored", () => {
 assert.ok(api.buildQuizReport(q,[false,false,false]).results.every(r=>r.status==='unanswered'));
 });
+
+test("extra-stale-answer-slots-do-not-inflate-results", () => {
+assert.deepEqual(api.buildQuizReport(q,[0,1,0,1,1]).summary,api.buildQuizReport(q,[0,1,0]).summary);
+});
