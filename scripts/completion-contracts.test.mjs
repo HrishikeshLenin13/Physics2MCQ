@@ -34,3 +34,7 @@ assert.ok(api.buildQuizReport(q,[Infinity,Infinity,Infinity]).results.every(r=>r
 test("saved-string-choices-are-not-scored", () => {
 assert.ok(api.buildQuizReport(q,['0','0','0']).results.every(r=>r.status==='unanswered'));
 });
+
+test("saved-boolean-choices-are-not-scored", () => {
+assert.ok(api.buildQuizReport(q,[false,false,false]).results.every(r=>r.status==='unanswered'));
+});
