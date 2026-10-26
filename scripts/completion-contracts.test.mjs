@@ -110,3 +110,7 @@ assert.throws(()=>api.buildQuizReport([...q,{...q[0]}],[],[]),RangeError);
 test("reports-do-not-mutate-the-question-bank", () => {
 const before=JSON.stringify(q);api.buildQuizReport(q,[0,1,0]);assert.equal(JSON.stringify(q),before);
 });
+
+test("reports-do-not-alias-saved-answers", () => {
+const a=[0,1,0],r=api.buildQuizReport(q,a);a[0]=1;assert.equal(r.results[0].selectedChoice,0);
+});
