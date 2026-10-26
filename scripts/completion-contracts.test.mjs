@@ -46,3 +46,7 @@ assert.deepEqual(api.buildQuizReport(q,[0,1,0,1,1]).summary,api.buildQuizReport(
 test("question-ids-need-not-be-dense-or-ordered", () => {
 const r=api.buildQuizReport([{...q[0],id:99},{...q[1],id:7}],[0,1]);assert.deepEqual(r.results.map(x=>x.questionId),[99,7]);assert.equal(r.summary.correct,2);
 });
+
+test("duplicate-question-ids-fail-before-scoring", () => {
+assert.throws(()=>api.buildQuizReport([q[0],q[0]],[0,0]),RangeError);
+});
