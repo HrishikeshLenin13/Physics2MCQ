@@ -54,3 +54,7 @@ assert.throws(()=>api.buildQuizReport([q[0],q[0]],[0,0]),RangeError);
 test("reject-fractional-id", () => {
 assert.throws(()=>api.buildQuizReport([{...q[0],id:.5}],[]),RangeError);
 });
+
+test("reject-unsafe-id", () => {
+assert.throws(()=>api.buildQuizReport([{...q[0],id:Number.MAX_SAFE_INTEGER+1}],[]),RangeError);
+});
