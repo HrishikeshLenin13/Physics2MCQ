@@ -82,3 +82,7 @@ assert.throws(()=>api.buildQuizReport([{...q[0],choices:[]}],[]),RangeError);
 test("empty-export-scope-has-zero-total", () => {
 const r=api.buildQuizReport(q,[0,1,0],[]);assert.equal(r.summary.total,0);assert.deepEqual(r.results,[]);
 });
+
+test("scope-keeps-bank-order-not-request-order", () => {
+assert.deepEqual(api.buildQuizReport(q,[0,1,0],[3,1]).results.map(x=>x.questionId),[1,3]);
+});
