@@ -118,3 +118,7 @@ const a=[0,1,0],r=api.buildQuizReport(q,a);a[0]=1;assert.equal(r.results[0].sele
 test("reports-export-status-not-answer-keys", () => {
 const r=api.buildQuizReport(q,[0,1,0]);assert.ok(r.results.every(x=>!('answer' in x)&&!('choices' in x)));assert.equal(r.schemaVersion,1);
 });
+
+test("right-and-missed-filters-partition-the-bank", () => {
+const a=[0,0,null],right=api.reviewQuestionIds(q,a,'right'),wrong=api.reviewQuestionIds(q,a,'wrong');assert.deepEqual(right,[1]);assert.deepEqual(wrong,[2,3]);
+});
