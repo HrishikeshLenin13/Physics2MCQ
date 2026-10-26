@@ -162,3 +162,7 @@ assert.deepEqual(api.selectQuizAnswer([0,1,0,1],0,1,3,2),[1,1,0]);
 test("clear-retains-the-length-and-other-answers", () => {
 const a=[0,1,0];assert.deepEqual(api.clearQuizAnswer(a,1),[0,null,0]);assert.deepEqual(a,[0,1,0]);
 });
+
+test("invalid-clear-returns-a-detached-unchanged-copy", () => {
+const a=[0,1];for(const i of [-1,2,.5,NaN]){const b=api.clearQuizAnswer(a,i);assert.deepEqual(b,a);assert.notEqual(b,a);}
+});
