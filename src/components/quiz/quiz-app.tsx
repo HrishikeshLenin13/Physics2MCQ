@@ -179,7 +179,7 @@ function QuizScreen() {
           ))}
         </div>
       </div>
-      <footer className="mt-8 flex items-center justify-between gap-3">
+      <footer className="mt-8 flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" onClick={prev} disabled={index === 0}>
           <ArrowLeft className="size-4" />
           Back
@@ -311,6 +311,7 @@ function ReviewScreen() {
           ))}
         </div>
       </header>
+      <Button className="mb-4 self-start" variant="secondary" onClick={()=>downloadQuizReport(QUESTIONS,answers,"csv",items.map(item=>item.id))}>Download filtered CSV</Button>
 
       <div className="mb-4 flex flex-wrap gap-1.5">
         {QUESTIONS.map((q, i) => {

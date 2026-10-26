@@ -39,3 +39,7 @@ Run from the repository root:
 npm test && npm run typecheck
 ```
 
+
+## Flexible attempts and focused review
+
+Learners can clear one answer or skip a question without restarting. Results distinguish incorrect and unanswered counts; missed retakes still include both. The unanswered review filter isolates unattempted work, and Download filtered CSV exports only the current review scope while preserving original question IDs and answer-slot alignment. Scoped report APIs reject duplicate or unknown selected IDs.
