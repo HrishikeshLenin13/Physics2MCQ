@@ -185,6 +185,7 @@ function QuizScreen() {
           Back
         </Button>
         <Button variant="ghost" onClick={clearAnswer} disabled={chosen === null}>Clear answer</Button>
+        {chosen === null ? <Button variant="secondary" onClick={next}>Skip question</Button> : null}
         <Button onClick={next} disabled={chosen === null}>
           {last ? "See score" : "Next"}
           <ArrowRight className="size-4" />
