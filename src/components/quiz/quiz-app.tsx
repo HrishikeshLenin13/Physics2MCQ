@@ -290,8 +290,8 @@ function ReviewScreen() {
         <p className="text-xs font-medium tracking-[0.16em] text-muted uppercase">
           Review · {correct}/{TOTAL}
         </p>
-        <div className="flex gap-1 rounded-md border border-border bg-surface p-1">
-          {(["all", "wrong", "right"] as const).map((f) => (
+        <div className="flex flex-wrap gap-1 rounded-md border border-border bg-surface p-1">
+          {(["all", "wrong", "right", "unanswered"] as const).map((f) => (
             <button
               key={f}
               type="button"

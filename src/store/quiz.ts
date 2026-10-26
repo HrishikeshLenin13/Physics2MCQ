@@ -4,7 +4,7 @@ import { buildQuizReport, selectQuizAnswer, clearQuizAnswer } from "../lib/quiz-
 import { QUESTIONS, TOTAL } from "@/data/questions";
 
 export type Phase = "start" | "quiz" | "results" | "review";
-export type Filter = "all" | "wrong" | "right";
+export type Filter = "all" | "wrong" | "right" | "unanswered";
 
 type QuizState = {
   phase: Phase;

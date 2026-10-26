@@ -39,8 +39,8 @@ export function selectQuizAnswer(answers: ReadonlyArray<number|null>, slot:numbe
   next[slot]=choice;return next;
 }
 
-export function reviewQuestionIds(questions: readonly QuizQuestion[], answers: ReadonlyArray<number|null>, filter:'all'|'wrong'|'right'):number[] {
-  return buildQuizReport(questions,answers).results.filter(result=>filter==='all' || (filter==='right' ? result.status==='correct' : result.status!=='correct')).map(result=>result.questionId);
+export function reviewQuestionIds(questions: readonly QuizQuestion[], answers: ReadonlyArray<number|null>, filter:'all'|'wrong'|'right'|'unanswered'):number[] {
+  return buildQuizReport(questions,answers).results.filter(result=>filter==='all' || (filter==='unanswered' ? result.status==='unanswered' : filter==='right' ? result.status==='correct' : result.status!=='correct')).map(result=>result.questionId);
 }
 
 export function clearQuizAnswer(answers: ReadonlyArray<number|null>, slot: number): Array<number|null> {
