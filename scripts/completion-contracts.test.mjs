@@ -6,3 +6,7 @@ const q=[{id:1,answer:0,choices:['a','b']},{id:2,answer:1,choices:['a','b']},{id
 test("empty-bank-has-no-invented-score", () => {
 assert.deepEqual(api.buildQuizReport([],[]).summary,{correct:0,answered:0,total:0,unanswered:0,percentage:0});
 });
+
+test("all-correct-bank-reports-full-percentage", () => {
+const r=api.buildQuizReport(q,[0,1,0]);assert.equal(r.summary.percentage,100);assert.ok(r.results.every(x=>x.status==='correct'));
+});
