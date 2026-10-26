@@ -90,3 +90,7 @@ assert.deepEqual(api.buildQuizReport(q,[0,1,0],[3,1]).results.map(x=>x.questionI
 test("scope-does-not-reindex-sparse-answers", () => {
 const r=api.buildQuizReport(q,[0,1,null],[2,3]);assert.equal(r.results[0].selectedChoice,1);assert.equal(r.results[1].selectedChoice,null);
 });
+
+test("unknown-export-ids-are-not-silently-ignored", () => {
+assert.throws(()=>api.buildQuizReport(q,[],[999]),RangeError);
+});
