@@ -94,3 +94,7 @@ const r=api.buildQuizReport(q,[0,1,null],[2,3]);assert.equal(r.results[0].select
 test("unknown-export-ids-are-not-silently-ignored", () => {
 assert.throws(()=>api.buildQuizReport(q,[],[999]),RangeError);
 });
+
+test("duplicate-export-ids-are-not-double-counted", () => {
+assert.throws(()=>api.buildQuizReport(q,[],[1,1]),RangeError);
+});
