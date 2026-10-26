@@ -174,3 +174,7 @@ const csv=api.quizReportCsv(q,[0,1,null]);assert.ok(csv.startsWith('"Question ID
 test("csv-has-consistent-crlf-record-termination", () => {
 const csv=api.quizReportCsv(q,[0,1,0]);assert.ok(csv.endsWith('\r\n'));assert.equal(csv.split('\r\n').length,5);
 });
+
+test("csv-scope-excludes-unselected-records", () => {
+const csv=api.quizReportCsv(q,[0,1,0],[2]);assert.equal(csv.trim().split('\r\n').length,2);assert.ok(csv.includes('"2","1","correct"'));
+});
