@@ -14,3 +14,7 @@ const r=api.buildQuizReport(q,[0,1,0]);assert.equal(r.summary.percentage,100);as
 test("all-incorrect-bank-is-answered-not-unanswered", () => {
 const r=api.buildQuizReport(q,[1,0,1]);assert.equal(r.summary.answered,3);assert.equal(r.summary.unanswered,0);assert.equal(r.summary.correct,0);
 });
+
+test("missing-answer-slots-remain-unanswered", () => {
+assert.equal(api.buildQuizReport(q,[]).summary.unanswered,3);assert.equal(api.buildQuizReport(q,[0]).summary.unanswered,2);
+});
