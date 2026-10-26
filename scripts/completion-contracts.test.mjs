@@ -102,3 +102,7 @@ assert.throws(()=>api.buildQuizReport(q,[],[1,1]),RangeError);
 test("scoped-percentage-uses-selected-bank-size", () => {
 assert.equal(api.buildQuizReport(q,[0,0,0],[1,2]).summary.percentage,50);
 });
+
+test("scoped-export-still-validates-unselected-bank-records", () => {
+assert.throws(()=>api.buildQuizReport([...q,{...q[0]}],[],[]),RangeError);
+});
