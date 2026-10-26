@@ -122,3 +122,7 @@ const r=api.buildQuizReport(q,[0,1,0]);assert.ok(r.results.every(x=>!('answer' i
 test("right-and-missed-filters-partition-the-bank", () => {
 const a=[0,0,null],right=api.reviewQuestionIds(q,a,'right'),wrong=api.reviewQuestionIds(q,a,'wrong');assert.deepEqual(right,[1]);assert.deepEqual(wrong,[2,3]);
 });
+
+test("unanswered-filter-is-a-subset-of-missed", () => {
+assert.deepEqual(api.reviewQuestionIds(q,[0,0,null],'unanswered'),[3]);assert.deepEqual(api.reviewQuestionIds(q,[0,0,null],'all'),[1,2,3]);
+});
