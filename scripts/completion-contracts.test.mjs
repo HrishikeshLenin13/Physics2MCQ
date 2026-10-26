@@ -42,3 +42,7 @@ assert.ok(api.buildQuizReport(q,[false,false,false]).results.every(r=>r.status==
 test("extra-stale-answer-slots-do-not-inflate-results", () => {
 assert.deepEqual(api.buildQuizReport(q,[0,1,0,1,1]).summary,api.buildQuizReport(q,[0,1,0]).summary);
 });
+
+test("question-ids-need-not-be-dense-or-ordered", () => {
+const r=api.buildQuizReport([{...q[0],id:99},{...q[1],id:7}],[0,1]);assert.deepEqual(r.results.map(x=>x.questionId),[99,7]);assert.equal(r.summary.correct,2);
+});
