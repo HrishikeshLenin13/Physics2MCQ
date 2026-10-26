@@ -10,3 +10,7 @@ assert.deepEqual(api.buildQuizReport([],[]).summary,{correct:0,answered:0,total:
 test("all-correct-bank-reports-full-percentage", () => {
 const r=api.buildQuizReport(q,[0,1,0]);assert.equal(r.summary.percentage,100);assert.ok(r.results.every(x=>x.status==='correct'));
 });
+
+test("all-incorrect-bank-is-answered-not-unanswered", () => {
+const r=api.buildQuizReport(q,[1,0,1]);assert.equal(r.summary.answered,3);assert.equal(r.summary.unanswered,0);assert.equal(r.summary.correct,0);
+});
