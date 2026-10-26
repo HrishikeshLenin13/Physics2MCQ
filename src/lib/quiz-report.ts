@@ -10,7 +10,7 @@ export function buildQuizReport(questions: readonly QuizQuestion[], answers: Rea
   });
   const correct = results.filter(result => result.status === 'correct').length;
   const answered = results.filter(result => result.status !== 'unanswered').length;
-  return { schemaVersion: 1, summary: {correct, answered, total:questions.length, unanswered:questions.length-answered}, results };
+  return { schemaVersion: 1, summary: {correct, answered, total:questions.length, unanswered:questions.length-answered,percentage:questions.length ? Math.round(correct/questions.length*100) : 0}, results };
 }
 
 export function downloadQuizReport(questions: readonly QuizQuestion[], answers: ReadonlyArray<number | null>) {
