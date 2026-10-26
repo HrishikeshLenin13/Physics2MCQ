@@ -70,3 +70,7 @@ assert.throws(()=>api.buildQuizReport([{...q[0],answer:-1}],[]),RangeError);
 test("reject-fractional-key", () => {
 assert.throws(()=>api.buildQuizReport([{...q[0],answer:.5}],[]),RangeError);
 });
+
+test("reject-past-last-key", () => {
+assert.throws(()=>api.buildQuizReport([{...q[0],answer:2}],[]),RangeError);
+});
