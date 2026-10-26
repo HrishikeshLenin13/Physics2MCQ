@@ -78,3 +78,7 @@ assert.throws(()=>api.buildQuizReport([{...q[0],answer:2}],[]),RangeError);
 test("empty-choice-lists-are-not-scoreable", () => {
 assert.throws(()=>api.buildQuizReport([{...q[0],choices:[]}],[]),RangeError);
 });
+
+test("empty-export-scope-has-zero-total", () => {
+const r=api.buildQuizReport(q,[0,1,0],[]);assert.equal(r.summary.total,0);assert.deepEqual(r.results,[]);
+});
