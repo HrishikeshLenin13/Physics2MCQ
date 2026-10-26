@@ -130,3 +130,7 @@ assert.deepEqual(api.reviewQuestionIds(q,[0,0,null],'unanswered'),[3]);assert.de
 test("selection-copies-rather-than-mutates-answer-arrays", () => {
 const a=[null,null,null],b=api.selectQuizAnswer(a,1,1,3,2);assert.deepEqual(a,[null,null,null]);assert.deepEqual(b,[null,1,null]);
 });
+
+test("selection-rejects-negative-slot", () => {
+const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,-1,0,3,2),a);
+});
