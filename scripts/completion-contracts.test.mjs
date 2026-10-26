@@ -154,3 +154,7 @@ const a=[null,null,null];assert.deepEqual(api.selectQuizAnswer(a,0,0,3,0),a);
 test("selection-pads-short-previous-arrays-with-unanswered", () => {
 assert.deepEqual(api.selectQuizAnswer([],2,1,3,2),[null,null,1]);
 });
+
+test("selection-truncates-stale-extra-answer-slots", () => {
+assert.deepEqual(api.selectQuizAnswer([0,1,0,1],0,1,3,2),[1,1,0]);
+});
