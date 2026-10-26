@@ -98,3 +98,7 @@ assert.throws(()=>api.buildQuizReport(q,[],[999]),RangeError);
 test("duplicate-export-ids-are-not-double-counted", () => {
 assert.throws(()=>api.buildQuizReport(q,[],[1,1]),RangeError);
 });
+
+test("scoped-percentage-uses-selected-bank-size", () => {
+assert.equal(api.buildQuizReport(q,[0,0,0],[1,2]).summary.percentage,50);
+});
