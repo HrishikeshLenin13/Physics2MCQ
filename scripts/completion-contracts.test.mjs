@@ -166,3 +166,7 @@ const a=[0,1,0];assert.deepEqual(api.clearQuizAnswer(a,1),[0,null,0]);assert.dee
 test("invalid-clear-returns-a-detached-unchanged-copy", () => {
 const a=[0,1];for(const i of [-1,2,.5,NaN]){const b=api.clearQuizAnswer(a,i);assert.deepEqual(b,a);assert.notEqual(b,a);}
 });
+
+test("csv-identifies-zero-based-choice-columns", () => {
+const csv=api.quizReportCsv(q,[0,1,null]);assert.ok(csv.startsWith('"Question ID","Selected choice (zero-based)"'));assert.ok(csv.includes('"3","","unanswered"'));
+});
