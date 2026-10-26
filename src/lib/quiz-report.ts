@@ -2,6 +2,11 @@ type QuizQuestion = { id: number; answer: number; choices: readonly string[] };
 
 /** Use only known question slots; stale or malformed saved choices are unanswered. */
 export function buildQuizReport(questions: readonly QuizQuestion[], answers: ReadonlyArray<number | null>) {
+  const ids=new Set<number>();
+  for(const question of questions) {
+    if (!Number.isSafeInteger(question.id) || ids.has(question.id) || !question.choices.length || !Number.isInteger(question.answer) || question.answer < 0 || question.answer >= question.choices.length) throw new RangeError("Use unique question IDs and valid answer keys.");
+    ids.add(question.id);
+  }
   const results = questions.map((question, index) => {
     const value = answers[index];
     const choice = Number.isInteger(value) && value !== null && value >= 0 && value < question.choices.length ? value : null;
