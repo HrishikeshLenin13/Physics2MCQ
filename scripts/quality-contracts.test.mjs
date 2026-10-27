@@ -130,3 +130,7 @@ const questions=[{...q[0],id:true}];assert.throws(()=>api.buildQuizReport(questi
 test("invalid-question-contract-id-fraction", () => {
 const questions=[{...q[0],id:1.5}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-id-unsafe", () => {
+const questions=[{...q[0],id:Number.MAX_SAFE_INTEGER+1}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
