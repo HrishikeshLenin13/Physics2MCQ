@@ -114,3 +114,7 @@ const answers=[null, null, null];const before=JSON.stringify(answers);const repo
 test("invalid-question-contract-id-nan", () => {
 const questions=[{...q[0],id:NaN}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-id-infinite", () => {
+const questions=[{...q[0],id:Infinity}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
