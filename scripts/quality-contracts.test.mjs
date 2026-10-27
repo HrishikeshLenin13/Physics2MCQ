@@ -238,3 +238,7 @@ const input=Object.freeze(Array.from({length:2},()=>null));const selected=api.se
 test("select-clear-size-2-slot-1", () => {
 const input=Object.freeze(Array.from({length:2},()=>null));const selected=api.selectQuizAnswer(input,1,1,2,2);assert.equal(selected[1],1);assert.equal(selected.length,2);const cleared=api.clearQuizAnswer(selected,1);assert.deepEqual(cleared,input);assert.equal(selected[1],1);assert.notEqual(cleared,input);
 });
+
+test("select-clear-size-3-slot-0", () => {
+const input=Object.freeze(Array.from({length:3},()=>null));const selected=api.selectQuizAnswer(input,0,1,3,2);assert.equal(selected[0],1);assert.equal(selected.length,3);const cleared=api.clearQuizAnswer(selected,0);assert.deepEqual(cleared,input);assert.equal(selected[0],1);assert.notEqual(cleared,input);
+});
