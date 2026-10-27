@@ -146,3 +146,7 @@ const questions=[{...q[0],answer:2}];assert.throws(()=>api.buildQuizReport(quest
 test("invalid-question-contract-key-nan", () => {
 const questions=[{...q[0],answer:NaN}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-key-fraction", () => {
+const questions=[{...q[0],answer:.5}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
