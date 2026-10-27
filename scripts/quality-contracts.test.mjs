@@ -122,3 +122,7 @@ const questions=[{...q[0],id:Infinity}];assert.throws(()=>api.buildQuizReport(qu
 test("invalid-question-contract-id-text", () => {
 const questions=[{...q[0],id:'1'}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-id-bool", () => {
+const questions=[{...q[0],id:true}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
