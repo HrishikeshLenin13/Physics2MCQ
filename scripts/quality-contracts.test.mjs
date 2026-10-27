@@ -170,3 +170,7 @@ const questions=[{...q[0],answer:null}];assert.throws(()=>api.buildQuizReport(qu
 test("invalid-question-contract-key-infinite", () => {
 const questions=[{...q[0],answer:Infinity}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("scope-preserves-bank-order-1", () => {
+const answers=Object.freeze([0,0,null]);const scope=Object.freeze([]);const result=api.buildQuizReport(q,answers,scope);assert.deepEqual(result.results.map(x=>x.questionId),[]);assert.deepEqual(result.results.map(x=>x.status),[]);assert.equal(result.summary.total,0);assert.equal(api.quizReportCsv(q,answers,scope).split('\r\n').length,2);
+});
