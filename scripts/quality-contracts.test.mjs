@@ -218,3 +218,7 @@ const answers=Object.freeze([0,0,null]);const scope=Object.freeze([1, 2, 3]);con
 test("scope-preserves-bank-order-12", () => {
 const answers=Object.freeze([0,0,null]);const scope=Object.freeze([3, 2, 1]);const result=api.buildQuizReport(q,answers,scope);assert.deepEqual(result.results.map(x=>x.questionId),[1, 2, 3]);assert.deepEqual(result.results.map(x=>x.status),["correct", "incorrect", "unanswered"]);assert.equal(result.summary.total,3);assert.equal(api.quizReportCsv(q,answers,scope).split('\r\n').length,5);
 });
+
+test("scope-preserves-bank-order-13", () => {
+const answers=Object.freeze([0,0,null]);const scope=Object.freeze([2, 3, 1]);const result=api.buildQuizReport(q,answers,scope);assert.deepEqual(result.results.map(x=>x.questionId),[1, 2, 3]);assert.deepEqual(result.results.map(x=>x.status),["correct", "incorrect", "unanswered"]);assert.equal(result.summary.total,3);assert.equal(api.quizReportCsv(q,answers,scope).split('\r\n').length,5);
+});
