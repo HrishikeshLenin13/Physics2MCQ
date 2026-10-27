@@ -46,3 +46,7 @@ const answers=[1, 1, 0];const before=JSON.stringify(answers);const report=api.bu
 test("joint-outcomes-incorrect-correct-incorrect", () => {
 const answers=[1, 1, 1];const before=JSON.stringify(answers);const report=api.buildQuizReport(q,answers);assert.deepEqual(report.results.map(x=>x.status),["incorrect", "correct", "incorrect"]);assert.equal(report.summary.correct,1);assert.equal(report.summary.answered,3);assert.equal(report.summary.unanswered,0);assert.equal(report.summary.percentage,33);assert.equal(JSON.stringify(answers),before);
 });
+
+test("joint-outcomes-incorrect-correct-unanswered", () => {
+const answers=[1, 1, null];const before=JSON.stringify(answers);const report=api.buildQuizReport(q,answers);assert.deepEqual(report.results.map(x=>x.status),["incorrect", "correct", "unanswered"]);assert.equal(report.summary.correct,1);assert.equal(report.summary.answered,2);assert.equal(report.summary.unanswered,1);assert.equal(report.summary.percentage,33);assert.equal(JSON.stringify(answers),before);
+});
