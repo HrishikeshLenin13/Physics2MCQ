@@ -134,3 +134,7 @@ const questions=[{...q[0],id:1.5}];assert.throws(()=>api.buildQuizReport(questio
 test("invalid-question-contract-id-unsafe", () => {
 const questions=[{...q[0],id:Number.MAX_SAFE_INTEGER+1}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-key-negative", () => {
+const questions=[{...q[0],answer:-1}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
