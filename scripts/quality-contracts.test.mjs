@@ -166,3 +166,7 @@ const questions=[{...q[0],choices:[]}];assert.throws(()=>api.buildQuizReport(que
 test("invalid-question-contract-key-null", () => {
 const questions=[{...q[0],answer:null}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-key-infinite", () => {
+const questions=[{...q[0],answer:Infinity}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
