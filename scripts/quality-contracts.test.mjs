@@ -110,3 +110,7 @@ const answers=[null, null, 1];const before=JSON.stringify(answers);const report=
 test("joint-outcomes-unanswered-unanswered-unanswered", () => {
 const answers=[null, null, null];const before=JSON.stringify(answers);const report=api.buildQuizReport(q,answers);assert.deepEqual(report.results.map(x=>x.status),["unanswered", "unanswered", "unanswered"]);assert.equal(report.summary.correct,0);assert.equal(report.summary.answered,0);assert.equal(report.summary.unanswered,3);assert.equal(report.summary.percentage,0);assert.equal(JSON.stringify(answers),before);
 });
+
+test("invalid-question-contract-id-nan", () => {
+const questions=[{...q[0],id:NaN}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
