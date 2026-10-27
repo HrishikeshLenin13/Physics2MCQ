@@ -118,3 +118,7 @@ const questions=[{...q[0],id:NaN}];assert.throws(()=>api.buildQuizReport(questio
 test("invalid-question-contract-id-infinite", () => {
 const questions=[{...q[0],id:Infinity}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
 });
+
+test("invalid-question-contract-id-text", () => {
+const questions=[{...q[0],id:'1'}];assert.throws(()=>api.buildQuizReport(questions,[0]),RangeError);assert.throws(()=>api.quizReportCsv(questions,[0]),RangeError);
+});
