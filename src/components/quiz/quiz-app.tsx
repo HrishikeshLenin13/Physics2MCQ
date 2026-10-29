@@ -67,14 +67,14 @@ function StartScreen() {
     <Shell>
       <div className="flex flex-1 flex-col justify-center gap-8">
         <p className="text-xs font-medium tracking-[0.18em] text-muted uppercase">
-          Unit 03.11
+          Unit 04.12
         </p>
         <div className="space-y-3">
           <h1 className="font-display text-4xl leading-tight text-fg sm:text-5xl">
-            Current and Circuits
+            Magnetism and Induction
           </h1>
           <p className="max-w-lg text-base text-muted">
-            Fifty multiple-choice questions in original order. Choose an answer,
+            Sixty multiple-choice questions in original order. Choose an answer,
             then continue. After the last question you can review every item and
             retest as many times as you want.
           </p>
