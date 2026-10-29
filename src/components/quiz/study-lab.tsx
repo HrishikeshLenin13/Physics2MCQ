@@ -20,6 +20,7 @@ import { QUESTIONS, LETTERS } from "@/data/questions";
 import { Button } from "@/components/ui/button";
 import { QuestionDiagram } from "./diagrams";
 import { QuizApp } from "./quiz-app";
+import { PublicLeaderboard, useRankedRound } from "./leaderboard";
 import { useTheme } from "@/store/theme";
 import { cn } from "@/lib/utils";
 import {
@@ -117,12 +118,15 @@ function LabShell({ children, wallet }: { children: ReactNode; wallet: number })
 
 export function StudyLab() {
   const [state, dispatch] = useReducer(gameReducer, INITIAL_GAME);
+  const ranked = useRankedRound();
+  const [playerName, setPlayerName] = useState("");
   const [classic, setClassic] = useState(false);
   const [randomStudy, setRandomStudy] = useState(false);
   const [saveProblem, setSaveProblem] = useState(false);
   const [confirmExit, setConfirmExit] = useState(false);
   useEffect(() => {
     try {
+      setPlayerName(localStorage.getItem("magnetism-player-name-v1") ?? "");
       const saved = JSON.parse(localStorage.getItem(SAVE_KEY) ?? "null");
       dispatch({
         type: "hydrate",
@@ -145,14 +149,30 @@ export function StudyLab() {
       setSaveProblem(true);
     }
   }, [state.hydrated, state.wallet, state.best]);
-  function start(mode: StudyMode, ids = QUESTIONS.map((q) => q.id)) {
+  async function start(mode: StudyMode, ids = QUESTIONS.map((q) => q.id)) {
     setConfirmExit(false);
-    dispatch({
-      type: "start",
-      mode,
-      order: mode === "study" && !randomStudy ? ids : shuffleIds(ids),
-    });
+    if (mode !== "study" && playerName.trim()) {
+      const session = await ranked.begin(playerName, mode);
+      if (!session) return;
+      dispatch({ type: "start", mode, order: session.order, wallet: session.wallet });
+    } else {
+      ranked.clear();
+      dispatch({
+        type: "start",
+        mode,
+        order: mode === "study" && !randomStudy ? ids : shuffleIds(ids),
+      });
+    }
   }
+  function changeName(name: string) {
+    setPlayerName(name);
+    try {
+      localStorage.setItem("magnetism-player-name-v1", name);
+    } catch {
+      setSaveProblem(true);
+    }
+  }
+
   if (classic)
     return (
       <>
@@ -171,6 +191,14 @@ export function StudyLab() {
       {saveProblem ? (
         <p role="status" className="mb-4 rounded-md border border-border bg-surface p-3 text-sm">
           Browser storage is unavailable. You can still play; earnings may not survive a refresh.
+        </p>
+      ) : null}
+      {ranked.error ? (
+        <p
+          role="status"
+          className="mb-4 rounded-md border border-wrong bg-wrong-dim p-4 text-sm text-wrong"
+        >
+          {ranked.error}
         </p>
       ) : null}
       {state.phase === "hub" ? (
@@ -197,13 +225,38 @@ export function StudyLab() {
               </p>
             </div>
           </section>
+          <section className="mb-6 rounded-lg border border-border bg-surface p-5">
+            <label htmlFor="player-name" className="mb-2 block font-medium">
+              Leaderboard nickname (optional)
+            </label>
+            <input
+              id="player-name"
+              value={playerName}
+              onChange={(event) => changeName(event.target.value)}
+              maxLength={24}
+              autoComplete="nickname"
+              placeholder="Your nickname"
+              aria-describedby="nickname-help"
+              className="min-h-11 w-full rounded-md border border-border bg-elevated px-3 text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:max-w-sm"
+            />
+            <p id="nickname-help" className="mt-2 text-sm text-muted">
+              Enter a nickname for ranked games, or leave blank for private practice. Finish a game
+              and choose Post to leaderboard to share your name and score publicly. Ranked games use
+              a shared wallet that saves when you post.
+            </p>
+          </section>
+          {ranked.starting ? (
+            <p role="status" className="mb-4 text-sm text-accent">
+              Starting your shared ranked round…
+            </p>
+          ) : null}
           <h2 className="mb-3 text-xl">Choose your mode</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             {MODES.map((mode) => (
               <button
                 key={mode.id}
                 aria-label={`Play ${mode.title}`}
-                disabled={!state.hydrated}
+                disabled={!state.hydrated || ranked.starting}
                 onClick={() => start(mode.id)}
                 className="group flex min-h-64 flex-col items-start rounded-lg border border-border bg-elevated p-5 text-left transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40"
               >
@@ -243,6 +296,7 @@ export function StudyLab() {
             resets the next reward to 10. Spend HBOBS in the shop during a game. Your wallet and
             best score save on this browser.
           </p>
+          <PublicLeaderboard revision={ranked.revision} />
         </>
       ) : state.phase === "end" ? (
         <section className="mx-auto max-w-2xl space-y-6 py-6">
@@ -264,8 +318,36 @@ export function StudyLab() {
               </p>
             </div>
           ) : null}
+          {ranked.ticket && state.mode !== "study" ? (
+            <section className="rounded-lg border border-accent bg-surface p-5">
+              <h2 className="mb-2 text-xl">Share your score, {playerName}</h2>
+              <p className="mb-4 text-sm text-muted">
+                Your nickname and best score will be visible to everyone on every device.
+              </p>
+              <Button
+                disabled={ranked.posting || ranked.posted}
+                onClick={async () => {
+                  const wallet = await ranked.post(state.history);
+                  if (wallet !== null) dispatch({ type: "sync-wallet", wallet });
+                }}
+              >
+                {ranked.posted
+                  ? "Score posted"
+                  : ranked.posting
+                    ? "Posting score…"
+                    : "Post to leaderboard"}
+              </Button>
+              {ranked.posted ? (
+                <p role="status" className="mt-3 text-sm text-correct">
+                  Saved to the shared leaderboard. Your ranked wallet is synced.
+                </p>
+              ) : null}
+            </section>
+          ) : null}
           <div className="flex flex-wrap gap-3">
-            <Button onClick={() => start(state.mode)}>Play again</Button>
+            <Button disabled={ranked.starting || ranked.posting} onClick={() => start(state.mode)}>
+              Play again
+            </Button>
             {state.missed.length ? (
               <Button variant="secondary" onClick={() => start("study", state.missed)}>
                 Study missed ({state.missed.length})
@@ -300,6 +382,7 @@ export function StudyLab() {
           ) : (
             <p className="text-correct">Every answer checked was right.</p>
           )}
+          <PublicLeaderboard revision={ranked.revision} />
         </section>
       ) : question ? (
         <>
@@ -382,7 +465,8 @@ export function StudyLab() {
           </div>
           <section className="mx-auto max-w-2xl">
             <p className="mb-3 text-xs text-muted">
-              Original question #{question.id} · choices stay in original letter order
+              {ranked.ticket ? `Ranked · ${playerName} · ` : ""}Original question #{question.id} ·
+              choices stay in original letter order
             </p>
             {question.diagram ? (
               <div className="mb-5">

@@ -1,8 +1,11 @@
 export type StudyMode = "study" | "streak" | "survival";
+export type GameMove =
+  { qid: number; type: "answer"; choice: number } | { qid: number; type: "power"; power: Power };
 export type Power = "fifty" | "boost" | "shield";
 export const POWER_COST: Record<Power, number> = { fifty: 40, boost: 100, shield: 80 };
 export const SAVE_KEY = "magnetism-lab-v1";
 export type GameState = {
+  history: GameMove[];
   mode: StudyMode;
   phase: "hub" | "play" | "end";
   order: number[];
@@ -25,6 +28,7 @@ export type GameState = {
   hydrated: boolean;
 };
 export const INITIAL_GAME: GameState = {
+  history: [],
   mode: "study",
   phase: "hub",
   order: [],
@@ -48,7 +52,8 @@ export const INITIAL_GAME: GameState = {
 };
 export type GameAction =
   | { type: "hydrate"; wallet: unknown; best: unknown }
-  | { type: "start"; mode: StudyMode; order: number[] }
+  | { type: "start"; mode: StudyMode; order: number[]; wallet?: number }
+  | { type: "sync-wallet"; wallet: number }
   | { type: "choose"; choice: number }
   | { type: "check"; answer: number }
   | { type: "buy"; power: Power; answer: number }
@@ -83,6 +88,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         best: savedNumber(action.best),
         hydrated: true,
       };
+    case "sync-wallet":
+      return { ...state, wallet: savedNumber(action.wallet) };
     case "start": {
       if (!state.hydrated) return state;
       const order = [...new Set(action.order)].filter((id) => Number.isSafeInteger(id) && id > 0);
@@ -90,7 +97,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...INITIAL_GAME,
         hydrated: true,
-        wallet: state.wallet,
+        wallet: action.wallet === undefined ? state.wallet : savedNumber(action.wallet),
         best: state.best,
         phase: "play",
         mode: action.mode,
@@ -127,6 +134,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const score = state.score + award;
       return {
         ...state,
+        history: [
+          ...state.history,
+          { type: "answer", qid: state.order[state.cursor], choice: state.chosen },
+        ],
         checked: true,
         correct: state.correct + Number(right),
         streak,
@@ -156,7 +167,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         (action.power === "shield" && state.shield)
       )
         return state;
-      const result = { ...state, wallet: state.wallet - POWER_COST[action.power] };
+      const result: GameState = {
+        ...state,
+        history: [
+          ...state.history,
+          { type: "power", qid: state.order[state.cursor], power: action.power },
+        ],
+        wallet: state.wallet - POWER_COST[action.power],
+      };
       if (action.power === "boost") return { ...result, boost: true };
       if (action.power === "shield") return { ...result, shield: true };
       const removed = [0, 1, 2, 3].filter((choice) => choice !== action.answer).slice(0, 2);
