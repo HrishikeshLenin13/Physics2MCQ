@@ -126,6 +126,14 @@ function Figure20() {
 
 const MAP = {
   figure20_1: Figure20,
+  magnetism2: () => <img src="/questions/magnetism/q2.png" alt="Original diagram for question 2" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism39: () => <img src="/questions/magnetism/q39.png" alt="Original diagram for question 39" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism40: () => <img src="/questions/magnetism/q40.png" alt="Original diagram for question 40" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism41: () => <img src="/questions/magnetism/q41.png" alt="Original diagram for question 41" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism42: () => <img src="/questions/magnetism/q42.png" alt="Original diagram for question 42" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism46: () => <img src="/questions/magnetism/q46.png" alt="Original diagram for question 46" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism47: () => <img src="/questions/magnetism/q47.png" alt="Original diagram for question 47" className="h-auto w-full max-w-sm mx-auto" />,
+  magnetism49: () => <img src="/questions/magnetism/q49.png" alt="Original diagram for question 49" className="h-auto w-full max-w-sm mx-auto" />,
 };
 
 export function QuestionDiagram({ id }: { id: DiagramId }) {
