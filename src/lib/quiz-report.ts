@@ -58,3 +58,9 @@ export function quizReviewPlan(questions:readonly QuizQuestion[],answers:Readonl
   const results=buildQuizReport(questions,answers).results;
   return [...results.filter(row=>row.status==='unanswered'),...results.filter(row=>row.status==='incorrect')].slice(0,limit).map(row=>row.questionId);
 }
+
+/** Distinguish whole-bank score from accuracy among answered questions. */
+export function quizReviewStatistics(questions:readonly QuizQuestion[],answers:ReadonlyArray<number|null>,questionIds?:readonly number[]) {
+  const summary=buildQuizReport(questions,answers,questionIds).summary;
+  return {...summary,incorrect:summary.answered-summary.correct,answeredAccuracy:summary.answered?Math.round(summary.correct/summary.answered*10000)/100:null};
+}
