@@ -51,3 +51,10 @@ export function clearQuizAnswer(answers: ReadonlyArray<number|null>, slot: numbe
   if (Number.isSafeInteger(slot) && slot>=0 && slot<next.length) next[slot]=null;
   return next;
 }
+
+/** Return known question IDs for review, unanswered first, then incorrect; never answer keys. */
+export function quizReviewPlan(questions:readonly QuizQuestion[],answers:ReadonlyArray<number|null>,limit=20):number[] {
+  if(!Number.isSafeInteger(limit)||limit<0)throw new RangeError('Use a nonnegative integer review limit.');
+  const results=buildQuizReport(questions,answers).results;
+  return [...results.filter(row=>row.status==='unanswered'),...results.filter(row=>row.status==='incorrect')].slice(0,limit).map(row=>row.questionId);
+}
