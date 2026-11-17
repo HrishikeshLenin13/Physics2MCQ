@@ -98,15 +98,19 @@ export function publicScores(board: BoardData, mode?: RankedMode): PublicScore[]
       )
         named.set(key, item);
     }
-  return [...named.values()]
-    .sort(
-      (a, b) =>
-        b.score - a.score ||
-        b.correct - a.correct ||
-        b.streak - a.streak ||
-        a.date.localeCompare(b.date),
-    )
-    .slice(0, 50);
+  const sorted = [...named.values()].sort(
+    (a, b) =>
+      b.score - a.score ||
+      b.correct - a.correct ||
+      b.streak - a.streak ||
+      a.date.localeCompare(b.date),
+  );
+  return mode
+    ? sorted.slice(0, 50)
+    : [
+        ...sorted.filter((score) => score.mode === "streak").slice(0, 50),
+        ...sorted.filter((score) => score.mode === "survival").slice(0, 50),
+      ];
 }
 
 export function recordRun(board: BoardData, ticket: RunTicket, moves: unknown, now: number) {
@@ -149,4 +153,9 @@ export function recordRun(board: BoardData, ticket: RunTicket, moves: unknown, n
     duplicate: false,
     wallet,
   };
+}
+
+/** Private Blob reads may mark the same storage hash weak after HTTP compression. */
+export function storageEtag(etag: string) {
+  return etag.replace(/^W\//, "");
 }

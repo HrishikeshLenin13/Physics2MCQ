@@ -1,6 +1,7 @@
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
-import { BlobPreconditionFailedError, get, put } from "@vercel/blob";
+import { BlobPreconditionFailedError, BlobServiceRateLimited, get, put } from "@vercel/blob";
 import {
+  storageEtag,
   EMPTY_BOARD,
   cleanPlayerName,
   publicScores,
@@ -11,14 +12,14 @@ import {
 import { shuffleIds } from "./study-game";
 import { QUESTIONS } from "../data/questions";
 
-const PATH = `leaderboard/${process.env.LEADERBOARD_NAMESPACE || "magnetism-v1"}.json`;
+const PATH = `leaderboard/${process.env.LEADERBOARD_NAMESPACE || "optics-v1"}.json`;
 const COOKIE = "magnetism_player";
 const TTL = 24 * 60 * 60 * 1000;
 const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
 function secret() {
   const value = process.env.BLOB_READ_WRITE_TOKEN;
   if (!value) throw new Error("Shared leaderboard storage is not configured.");
-  return createHmac("sha256", value).update("magnetism-leaderboard-session-v1").digest();
+  return createHmac("sha256", value).update("optics-leaderboard-session-v1").digest();
 }
 function sign(value: unknown) {
   const body = Buffer.from(JSON.stringify(value)).toString("base64url");
@@ -55,10 +56,12 @@ async function readBoard(): Promise<{ data: BoardData; etag?: string }> {
   if (!blob || blob.statusCode !== 200) return { data: structuredClone(EMPTY_BOARD) };
   if (blob.blob.size > 4 * 1024 * 1024)
     throw new Error("The leaderboard is full. Try again later.");
-  const data = (await new Response(blob.stream).json()) as BoardData;
+  const text = await new Response(blob.stream).text();
+  if (text.length > 4 * 1024 * 1024) throw new Error("The leaderboard is full. Try again later.");
+  const data = JSON.parse(text) as BoardData;
   if (data.version !== 1 || !data.players || !data.runs)
     throw new Error("Leaderboard data could not be loaded.");
-  return { data, etag: blob.blob.etag };
+  return { data, etag: storageEtag(blob.blob.etag) };
 }
 export async function handleLeaderboard(request: Request): Promise<Response> {
   try {
@@ -114,7 +117,7 @@ export async function handleLeaderboard(request: Request): Promise<Response> {
     )
       throw new Error("This ranked session expired. Start a new game.");
     cleanPlayerName(ticket.name);
-    for (let attempt = 0; attempt < 6; attempt++) {
+    for (let attempt = 0; attempt < 8; attempt++) {
       const current = await readBoard();
       const result = recordRun(current.data, ticket, body.moves, Date.now());
       if (result.duplicate)
@@ -143,9 +146,16 @@ export async function handleLeaderboard(request: Request): Promise<Response> {
       } catch (error) {
         if (
           error instanceof BlobPreconditionFailedError ||
+          error instanceof BlobServiceRateLimited ||
+          (error instanceof Error &&
+            /conflicting operation against this resource/i.test(error.message)) ||
           (!current.etag && error instanceof Error && /already exists/i.test(error.message))
-        )
+        ) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 80 * 2 ** attempt + Math.random() * 120),
+          );
           continue;
+        }
         throw error;
       }
     }

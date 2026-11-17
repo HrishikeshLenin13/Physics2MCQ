@@ -103,7 +103,7 @@ export const useQuiz = create<QuizState>()(
         }),
     }),
     {
-      name: "circuits-quiz",
+      name: "optics-quiz-v1",
       storage: createJSONStorage(() => {
         if (typeof window === "undefined") {
           return {

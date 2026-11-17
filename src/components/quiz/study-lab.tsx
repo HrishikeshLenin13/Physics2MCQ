@@ -20,7 +20,8 @@ import { QUESTIONS, LETTERS } from "@/data/questions";
 import { Button } from "@/components/ui/button";
 import { QuestionDiagram } from "./diagrams";
 import { QuizApp } from "./quiz-app";
-import { PublicLeaderboard, useRankedRound } from "./leaderboard";
+import { PublicLeaderboard } from "./leaderboard";
+import { useRankedRound } from "@/lib/leaderboard-client";
 import { useTheme } from "@/store/theme";
 import { cn } from "@/lib/utils";
 import {
@@ -92,7 +93,7 @@ function LabShell({ children, wallet }: { children: ReactNode; wallet: number })
     <main className="mx-auto min-h-dvh max-w-4xl px-4 py-5 text-fg sm:px-8 sm:py-8">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
         <span className="flex items-center gap-2 font-semibold">
-          <Zap className="size-5 text-accent" aria-hidden="true" /> Magnetism Lab
+          <Zap className="size-5 text-accent" aria-hidden="true" /> Optics Lab
         </span>
         <div className="flex items-center gap-2">
           <span
@@ -205,7 +206,7 @@ export function StudyLab() {
         <>
           <section className="mb-8 grid gap-6 sm:grid-cols-3 sm:items-end">
             <div className="sm:col-span-2">
-              <p className="mb-3 text-sm text-accent">AP Physics 2 · Unit 04.12</p>
+              <p className="mb-3 text-sm text-accent">AP Physics 2 · Unit 05.13</p>
               <h1 className="mb-4 text-4xl leading-tight sm:text-5xl">
                 A little practice.
                 <br />A longer streak.

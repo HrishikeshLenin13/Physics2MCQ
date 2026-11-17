@@ -3,7 +3,7 @@ export type GameMove =
   { qid: number; type: "answer"; choice: number } | { qid: number; type: "power"; power: Power };
 export type Power = "fifty" | "boost" | "shield";
 export const POWER_COST: Record<Power, number> = { fifty: 40, boost: 100, shield: 80 };
-export const SAVE_KEY = "magnetism-lab-v1";
+export const SAVE_KEY = "optics-lab-v1";
 export type GameState = {
   history: GameMove[];
   mode: StudyMode;

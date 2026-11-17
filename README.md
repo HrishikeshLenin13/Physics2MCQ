@@ -1,42 +1,44 @@
-# Physics2MCQ
+# Optics Lab · Physics2MCQ
 
-A circuit-physics multiple-choice study app with question diagrams, answer review, and focused retakes.
+AP Physics 2 Unit 05.13 practice with the original 60 geometric optics questions, answer letters, marked solutions, and diagrams.
 
-## Features
+## Modes
 
-- Work through the included question bank and revisit previous questions.
-- Review correct, incorrect, and unanswered questions.
-- Retake the full bank or only missed questions.
-- **Download review** saves a local JSON report with question IDs, selected choices, result status, and totals.
-- Light/dark appearance and browser-persisted quiz state.
+- **Study desk:** select a choice, press **Check question**, see the correct answer, and retry missed questions. Optional shuffled order; no currency is spent or awarded.
+- **Streak climb:** a shuffled, non-repeating deck. Consecutive correct answers earn 10, 15, 20… points and HBOBS. A miss resets the next reward to 10.
+- **Three-heart challenge:** shuffled questions and the same growing rewards, with three lives.
+- **Classic quiz:** original-order questions, end-of-quiz scoring, review, retakes, and review downloads.
 
-The review report contains no account credentials. Short or malformed saved answer lists count as unanswered rather than inflating the answered total.
+Game power-ups cost earned HBOBS: **50/50** (40), **Double charge** (100), and **Streak shield** (80). Purchases happen before checking. Checked answers lock and each question pays only once.
 
-## Local development
+## Public leaderboard
+
+Enter an optional nickname before starting a game. Complete the round, then choose **Post to leaderboard**. Everyone can view the same public board without signing in. The board refreshes every 15 seconds while visible, when returning to the tab, or with **Refresh**.
+
+- Separate top-50 rankings for each game, best posted score per nickname/mode.
+- Shared persistent storage in a connected **private Vercel Blob store**; only the app's server can write it. All deployment domains use the same store and production namespace.
+- The backend signs anonymous browser sessions and round tickets, replays answer/purchase history against the actual question bank, and computes scores rather than accepting a browser-supplied number.
+- Conditional ETag writes retry concurrent submissions, and run IDs make repeated submissions idempotent.
+- Nicknames are public labels, not verified accounts. Matching nicknames share a public rank; browser identity and ranked wallet remain separate. Ranked HBOBS are banked when a finished round is posted. Leaving an unposted ranked round does not bank its currency.
+- Private practice uses browser-local earnings. Clearing browser storage resets those. Clearing cookies resets anonymous ranked identity; public scores remain.
+
+## Development
 
 Requires Node.js 22+ and npm.
 
 ```sh
 npm ci
 npm run dev
-```
-
-Open [localhost:8080](http://localhost:8080). The app includes environment and connector scaffolding from its original hosting setup; external sign-in/data features need the corresponding configuration.
-
-## Verify
-
-```sh
 npm test
 npm run typecheck
+npm run build
 ```
 
-`npm run build:dev` builds the development-mode site without the production command's database migration step. Configure the deployment environment before using `npm run build`.
+For live leaderboard development, supply the connected store's `BLOB_READ_WRITE_TOKEN` as a **server-only process environment variable**. Never prefix it with `VITE_`, put it in client code, or commit it. Vercel injects it into the connected project's environments. Without storage credentials, private modes still work and the leaderboard shows an explicit retryable unavailable state.
 
-## Data and limitations
+Set the optional server-only `LEADERBOARD_NAMESPACE` to a dedicated test value when testing against the store. Production defaults to `magnetism-v1`; use that same namespace across domains to share one board.
 
-Quiz selections are saved in this browser. Clearing site storage resets them. The JSON download is a personal review aid, not an official grade record. The checked-in questions and solutions should be reviewed by an instructor before high-stakes use.
-
-## Developer resources
+The question bank follows the source document's checked answers verbatim, including apparent source inconsistencies. It is a study aid, not an official grade record.
 
 - [Feature usage and API contracts](docs/RECENT_IMPROVEMENTS.md)
 - [Troubleshooting and recovery](docs/TROUBLESHOOTING.md)

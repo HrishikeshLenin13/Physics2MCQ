@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Magnetism Lab";
+const APP_NAME = "Optics Lab";
 const THEME_BOOT =
   "(function(){try{var t=localStorage.getItem('circuits-theme');if(t){var p=JSON.parse(t);if(p&&(p.state&&p.state.theme==='dark'||p==='dark')){document.documentElement.setAttribute('data-theme','dark');return}}}catch(e){}document.documentElement.setAttribute('data-theme','light');})();";
 
@@ -16,7 +16,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Study Unit 04.12 magnetism and induction with 60 questions, instant answer checks, streak games, HBOBS rewards, and power-ups.",
+          "Study Unit 05.13 geometric optics with 60 questions, instant answer checks, streak games, HBOBS rewards, and power-ups.",
       },
       { name: "theme-color", content: "#f3efe6" },
     ],

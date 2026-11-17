@@ -14,9 +14,8 @@ const { QUESTIONS } = await import(questions);
 const core = transpile("../src/lib/leaderboard-core.ts")
   .replace('"./study-game"', JSON.stringify(study))
   .replace('"../data/questions"', JSON.stringify(questions));
-const { EMPTY_BOARD, cleanPlayerName, publicScores, recordRun, replayRankedRun } = await import(
-  url(core)
-);
+const { storageEtag, EMPTY_BOARD, cleanPlayerName, publicScores, recordRun, replayRankedRun } =
+  await import(url(core));
 const now = Date.now();
 const ticket = (overrides = {}) => ({
   version: 1,
@@ -131,4 +130,53 @@ test("expired replay markers are pruned but current run stays idempotent", () =>
   const result = recordRun(b, ticket(), lose, now);
   assert.equal(result.board.runs.old, undefined);
   assert.equal(result.board.runs["run-1"], now + 86400000);
+});
+
+test("each mode keeps its own top 50 instead of crowding out survival scores", () => {
+  const board = empty();
+  for (let i = 0; i < 60; i++)
+    board.players["p" + i] = {
+      name: "Streak " + i,
+      wallet: 0,
+      scores: {
+        streak: {
+          name: "Streak " + i,
+          score: 9000 - i,
+          correct: 59,
+          checked: 60,
+          streak: 59,
+          mode: "streak",
+          date: new Date(now).toISOString(),
+        },
+      },
+    };
+  board.players.survivor = {
+    name: "Survivor",
+    wallet: 0,
+    scores: {
+      survival: {
+        name: "Survivor",
+        score: 25,
+        correct: 2,
+        checked: 5,
+        streak: 2,
+        mode: "survival",
+        date: new Date(now).toISOString(),
+      },
+    },
+  };
+  const rows = publicScores(board);
+  assert.equal(rows.filter((r) => r.mode === "streak").length, 50);
+  assert.equal(rows.filter((r) => r.mode === "survival").length, 1);
+});
+
+test("compressed private reads normalize to the same strong storage ETag for conditional writes", () => {
+  assert.equal(
+    storageEtag('W/"b42b2530b262a19d796f8117e1d60933"'),
+    '"b42b2530b262a19d796f8117e1d60933"',
+  );
+  assert.equal(
+    storageEtag('"b42b2530b262a19d796f8117e1d60933"'),
+    '"b42b2530b262a19d796f8117e1d60933"',
+  );
 });

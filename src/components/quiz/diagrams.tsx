@@ -125,6 +125,17 @@ function Figure20() {
 }
 
 const MAP = {
+  optics21: () => <img src="/questions/optics/q21.png" alt="Original geometric optics diagram for question 21" className="h-auto w-full max-w-sm mx-auto" />,
+  optics22: () => <img src="/questions/optics/q22.png" alt="Original geometric optics diagram for question 22" className="h-auto w-full max-w-sm mx-auto" />,
+  optics35: () => <img src="/questions/optics/q35.png" alt="Original geometric optics diagram for question 35" className="h-auto w-full max-w-sm mx-auto" />,
+  optics48: () => <img src="/questions/optics/q48.png" alt="Original geometric optics diagram for question 48" className="h-auto w-full max-w-sm mx-auto" />,
+  optics49: () => <img src="/questions/optics/q49.png" alt="Original geometric optics diagram for question 49" className="h-auto w-full max-w-sm mx-auto" />,
+  optics50: () => <img src="/questions/optics/q50.png" alt="Original geometric optics diagram for question 50" className="h-auto w-full max-w-sm mx-auto" />,
+  optics51: () => <img src="/questions/optics/q51.png" alt="Original geometric optics diagram for question 51" className="h-auto w-full max-w-sm mx-auto" />,
+  optics56: () => <img src="/questions/optics/q56.png" alt="Original geometric optics diagram for question 56" className="h-auto w-full max-w-sm mx-auto" />,
+  optics57: () => <img src="/questions/optics/q57.png" alt="Original geometric optics diagram for question 57" className="h-auto w-full max-w-sm mx-auto" />,
+  optics58: () => <img src="/questions/optics/q58.png" alt="Original geometric optics diagram for question 58" className="h-auto w-full max-w-sm mx-auto" />,
+  optics60: () => <img src="/questions/optics/q60.png" alt="Original geometric optics diagram for question 60" className="h-auto w-full max-w-sm mx-auto" />,
   figure20_1: Figure20,
   magnetism2: () => <img src="/questions/magnetism/q2.png" alt="Original diagram for question 2" className="h-auto w-full max-w-sm mx-auto" />,
   magnetism39: () => <img src="/questions/magnetism/q39.png" alt="Original diagram for question 39" className="h-auto w-full max-w-sm mx-auto" />,

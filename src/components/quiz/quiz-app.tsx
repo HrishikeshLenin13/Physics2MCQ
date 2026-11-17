@@ -67,11 +67,11 @@ function StartScreen() {
     <Shell>
       <div className="flex flex-1 flex-col justify-center gap-8">
         <p className="text-xs font-medium tracking-[0.18em] text-muted uppercase">
-          Unit 04.12
+          Unit 05.13
         </p>
         <div className="space-y-3">
           <h1 className="font-display text-4xl leading-tight text-fg sm:text-5xl">
-            Magnetism and Induction
+            Geometric Optics
           </h1>
           <p className="max-w-lg text-base text-muted">
             Sixty multiple-choice questions in original order. Choose an answer,
