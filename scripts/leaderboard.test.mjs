@@ -132,7 +132,7 @@ test("expired replay markers are pruned but current run stays idempotent", () =>
   assert.equal(result.board.runs["run-1"], now + 86400000);
 });
 
-test("each mode keeps its own top 50 instead of crowding out survival scores", () => {
+test("every named player has a rank in each mode", () => {
   const board = empty();
   for (let i = 0; i < 60; i++)
     board.players["p" + i] = {
@@ -166,7 +166,7 @@ test("each mode keeps its own top 50 instead of crowding out survival scores", (
     },
   };
   const rows = publicScores(board);
-  assert.equal(rows.filter((r) => r.mode === "streak").length, 50);
+  assert.equal(rows.filter((r) => r.mode === "streak").length, 60);
   assert.equal(rows.filter((r) => r.mode === "survival").length, 1);
 });
 
@@ -179,4 +179,24 @@ test("compressed private reads normalize to the same strong storage ETag for con
     storageEtag('"b42b2530b262a19d796f8117e1d60933"'),
     '"b42b2530b262a19d796f8117e1d60933"',
   );
+});
+
+test("live checkpoints sync zero and partial scores without double-paying", () => {
+  let b = recordRun(empty(), ticket(), [], now, true).board;
+  assert.equal(publicScores(b)[0].score, 0);
+  let a = recordRun(b, ticket(), [answer(1)], now + 1, true);
+  assert.equal(a.wallet, 10);
+  let same = recordRun(a.board, ticket(), [answer(1)], now + 2, true);
+  assert.equal(same.wallet, 10);
+  let two = recordRun(same.board, ticket(), [answer(1), answer(2)], now + 3, true);
+  assert.equal(two.wallet, 25);
+  assert.equal(publicScores(two.board)[0].checked, 2);
+  let stale = recordRun(two.board, ticket(), [answer(1)], now + 4, true);
+  assert.equal(stale.wallet, 25);
+  assert.equal(publicScores(stale.board)[0].score, 25);
+  assert.throws(() => recordRun(two.board, ticket(), [answer(1, false)], now + 5, true));
+  let end = recordRun(two.board, ticket(), lose, now + 6, true);
+  assert.equal(end.wallet, 25);
+  assert.equal(publicScores(end.board)[0].checked, 5);
+  assert.equal(recordRun(end.board, ticket(), lose, now + 7).wallet, 25);
 });

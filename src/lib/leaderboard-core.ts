@@ -32,6 +32,7 @@ export type BoardData = {
   version: 1;
   players: Record<string, PlayerRecord>;
   runs: Record<string, number>;
+  checkpoints?: Record<string, { moves: RunMove[]; delta: number; expires: number }>;
 };
 export const EMPTY_BOARD: BoardData = { version: 1, players: {}, runs: {} };
 
@@ -44,8 +45,12 @@ export function cleanPlayerName(value: unknown): string {
 }
 
 /** Recompute the entire round; the browser never submits a trusted numeric score. */
-export function replayRankedRun(ticket: RunTicket, input: unknown) {
-  if (!Array.isArray(input) || input.length < 1 || input.length > QUESTIONS.length * 4)
+export function replayRankedRun(ticket: RunTicket, input: unknown, partial = false) {
+  if (
+    !Array.isArray(input) ||
+    (!partial && input.length < 1) ||
+    input.length > QUESTIONS.length * 4
+  )
     throw new Error("This round's answer history is incomplete.");
   let state = gameReducer(INITIAL_GAME, { type: "hydrate", wallet: ticket.wallet, best: 0 });
   state = gameReducer(state, { type: "start", mode: ticket.mode, order: ticket.order });
@@ -78,7 +83,8 @@ export function replayRankedRun(ticket: RunTicket, input: unknown) {
       state = gameReducer(state, { type: "next" });
     } else throw new Error("Unknown round action.");
   }
-  if (state.phase !== "end") throw new Error("Finish the round before posting a score.");
+  if (!partial && state.phase !== "end")
+    throw new Error("Finish the round before posting a score.");
   return state;
 }
 
@@ -106,25 +112,47 @@ export function publicScores(board: BoardData, mode?: RankedMode): PublicScore[]
       a.date.localeCompare(b.date),
   );
   return mode
-    ? sorted.slice(0, 50)
+    ? sorted
     : [
-        ...sorted.filter((score) => score.mode === "streak").slice(0, 50),
-        ...sorted.filter((score) => score.mode === "survival").slice(0, 50),
+        ...sorted.filter((score) => score.mode === "streak"),
+        ...sorted.filter((score) => score.mode === "survival"),
       ];
 }
 
-export function recordRun(board: BoardData, ticket: RunTicket, moves: unknown, now: number) {
-  const result = replayRankedRun(ticket, moves);
+export function recordRun(
+  board: BoardData,
+  ticket: RunTicket,
+  moves: unknown,
+  now: number,
+  partial = false,
+) {
+  const result = replayRankedRun(ticket, moves, partial);
+  const checkpoint = board.checkpoints?.[ticket.id];
+  const history = moves as RunMove[];
+  if (
+    checkpoint &&
+    JSON.stringify(history.slice(0, checkpoint.moves.length)) !== JSON.stringify(checkpoint.moves)
+  ) {
+    // A delayed shorter checkpoint is harmless; a rewritten answer history is not.
+    if (
+      history.length <= checkpoint.moves.length &&
+      JSON.stringify(checkpoint.moves.slice(0, history.length)) === JSON.stringify(history)
+    )
+      return { board, duplicate: true, wallet: board.players[ticket.player]?.wallet ?? 0 };
+    throw new Error("Round history changed after syncing.");
+  }
+  if (checkpoint && history.length === checkpoint.moves.length)
+    return { board, duplicate: true, wallet: board.players[ticket.player]?.wallet ?? 0 };
   if (board.runs[ticket.id])
     return { board, duplicate: true, wallet: board.players[ticket.player]?.wallet ?? 0 };
   const previous = board.players[ticket.player] ?? { name: ticket.name, wallet: 0, scores: {} };
-  const wallet = previous.wallet + result.wallet - ticket.wallet;
+  const wallet = previous.wallet + result.wallet - ticket.wallet - (checkpoint?.delta ?? 0);
   if (wallet < 0) throw new Error("Your wallet changed in another game. Start a new ranked round.");
   const score: PublicScore = {
     name: ticket.name,
     score: result.score,
     correct: result.correct,
-    checked: result.cursor + 1,
+    checked: history.filter((move) => move.type === "answer").length,
     streak: result.bestStreak,
     mode: ticket.mode,
     date: new Date(now).toISOString(),
@@ -133,7 +161,9 @@ export function recordRun(board: BoardData, ticket: RunTicket, moves: unknown, n
   const best =
     !priorBest ||
     score.score > priorBest.score ||
-    (score.score === priorBest.score && score.correct > priorBest.correct)
+    (score.score === priorBest.score &&
+      (score.correct > priorBest.correct ||
+        (score.correct === priorBest.correct && score.checked > priorBest.checked)))
       ? score
       : priorBest;
   const runs = Object.fromEntries(Object.entries(board.runs).filter(([, expiry]) => expiry > now));
@@ -148,7 +178,17 @@ export function recordRun(board: BoardData, ticket: RunTicket, moves: unknown, n
           scores: { ...previous.scores, [ticket.mode]: best },
         },
       },
-      runs: { ...runs, [ticket.id]: ticket.expires },
+      runs: result.phase === "end" ? { ...runs, [ticket.id]: ticket.expires } : runs,
+      checkpoints: {
+        ...Object.fromEntries(
+          Object.entries(board.checkpoints ?? {}).filter(([, value]) => value.expires > now),
+        ),
+        [ticket.id]: {
+          moves: history,
+          delta: result.wallet - ticket.wallet,
+          expires: ticket.expires,
+        },
+      },
     },
     duplicate: false,
     wallet,

@@ -3,9 +3,17 @@ import { RefreshCw, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PublicScore, RankedMode } from "@/lib/leaderboard-core";
 
-export function PublicLeaderboard({ revision = 0 }: { revision?: number }) {
+export function PublicLeaderboard({
+  revision = 0,
+  playerName = "",
+  initialMode = "streak",
+}: {
+  revision?: number;
+  playerName?: string;
+  initialMode?: RankedMode;
+}) {
   const [scores, setScores] = useState<PublicScore[]>([]);
-  const [filter, setFilter] = useState<RankedMode>("streak");
+  const [filter, setFilter] = useState<RankedMode>(initialMode);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [refresh, setRefresh] = useState(0);
@@ -40,7 +48,7 @@ export function PublicLeaderboard({ revision = 0 }: { revision?: number }) {
     void load();
     const timer = window.setInterval(() => {
       void load();
-    }, 15000);
+    }, 3000);
     const onFocus = () => {
       void load();
     };
@@ -55,6 +63,10 @@ export function PublicLeaderboard({ revision = 0 }: { revision?: number }) {
     };
   }, [revision, refresh]);
   const rows = scores.filter((score) => score.mode === filter);
+  const myIndex = rows.findIndex(
+    (row) => row.name.trim().toLowerCase() === playerName.trim().toLowerCase(),
+  );
+
   return (
     <section aria-label="Public leaderboard" className="my-8 border-t border-border pt-6">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -72,8 +84,8 @@ export function PublicLeaderboard({ revision = 0 }: { revision?: number }) {
         </Button>
       </div>
       <p className="mb-4 text-sm text-muted">
-        One shared board for every device. Best posted score per nickname and mode. Refreshes every
-        15 seconds while this page is visible.
+        One shared board for every device. Best automatically synced score per nickname and mode.
+        Refreshes every 3 seconds while this page is visible.
       </p>
       <div className="mb-4 flex flex-wrap gap-2" aria-label="Leaderboard mode">
         {(["streak", "survival"] as const).map((mode) => (
@@ -87,6 +99,13 @@ export function PublicLeaderboard({ revision = 0 }: { revision?: number }) {
           </Button>
         ))}
       </div>
+      {playerName ? (
+        <p className="mb-4 font-medium text-accent">
+          {myIndex >= 0
+            ? `Your place: #${myIndex + 1} of ${rows.length} · ${rows[myIndex].score} points`
+            : `No ${filter === "streak" ? "Streak climb" : "Three-heart challenge"} score for ${playerName} yet. Play this event to join.`}
+        </p>
+      ) : null}
       {error ? (
         <p role="status" className="mb-3 rounded-md border border-border bg-surface p-3 text-sm">
           {error} Use Refresh to try again.
@@ -133,7 +152,7 @@ export function PublicLeaderboard({ revision = 0 }: { revision?: number }) {
         </div>
       ) : !error ? (
         <p className="rounded-lg border border-dashed border-border p-6 text-muted">
-          No scores yet in this mode. Enter a nickname, finish a game, and post the first one.
+          No scores yet in this mode. Enter a nickname and start a game to join this event.
         </p>
       ) : null}
       {updated ? (

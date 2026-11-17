@@ -119,7 +119,7 @@ function LabShell({ children, wallet }: { children: ReactNode; wallet: number })
 
 export function StudyLab() {
   const [state, dispatch] = useReducer(gameReducer, INITIAL_GAME);
-  const ranked = useRankedRound();
+  const ranked = useRankedRound(state.history, state.phase !== "hub");
   const [playerName, setPlayerName] = useState("");
   const [classic, setClassic] = useState(false);
   const [randomStudy, setRandomStudy] = useState(false);
@@ -212,7 +212,7 @@ export function StudyLab() {
                 <br />A longer streak.
               </h1>
               <p className="max-w-xl text-muted">
-                Magnetism and induction, one question at a time. Pick how you want to learn from the
+                Geometric optics, one question at a time. Pick how you want to learn from the
                 same {QUESTIONS.length}-question deck.
               </p>
             </div>
@@ -241,9 +241,9 @@ export function StudyLab() {
               className="min-h-11 w-full rounded-md border border-border bg-elevated px-3 text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:max-w-sm"
             />
             <p id="nickname-help" className="mt-2 text-sm text-muted">
-              Enter a nickname for ranked games, or leave blank for private practice. Finish a game
-              and choose Post to leaderboard to share your name and score publicly. Ranked games use
-              a shared wallet that saves when you post.
+              Enter a nickname for ranked games, or leave blank for private practice. Named games
+              automatically sync your public score and HBOBS after every answer. Each game has its
+              own ranking.
             </p>
           </section>
           {ranked.starting ? (
@@ -297,7 +297,11 @@ export function StudyLab() {
             resets the next reward to 10. Spend HBOBS in the shop during a game. Your wallet and
             best score save on this browser.
           </p>
-          <PublicLeaderboard revision={ranked.revision} />
+          <PublicLeaderboard
+            revision={ranked.revision}
+            playerName={playerName}
+            initialMode={state.mode === "survival" ? "survival" : "streak"}
+          />
         </>
       ) : state.phase === "end" ? (
         <section className="mx-auto max-w-2xl space-y-6 py-6">
@@ -321,22 +325,22 @@ export function StudyLab() {
           ) : null}
           {ranked.ticket && state.mode !== "study" ? (
             <section className="rounded-lg border border-accent bg-surface p-5">
-              <h2 className="mb-2 text-xl">Share your score, {playerName}</h2>
+              <h2 className="mb-2 text-xl">Leaderboard sync, {playerName}</h2>
               <p className="mb-4 text-sm text-muted">
                 Your nickname and best score will be visible to everyone on every device.
               </p>
               <Button
-                disabled={ranked.posting || ranked.posted}
+                disabled={ranked.posting}
                 onClick={async () => {
                   const wallet = await ranked.post(state.history);
                   if (wallet !== null) dispatch({ type: "sync-wallet", wallet });
                 }}
               >
                 {ranked.posted
-                  ? "Score posted"
+                  ? "Synced · sync again"
                   : ranked.posting
-                    ? "Posting score…"
-                    : "Post to leaderboard"}
+                    ? "Syncing score…"
+                    : "Retry sync"}
               </Button>
               {ranked.posted ? (
                 <p role="status" className="mt-3 text-sm text-correct">
@@ -383,7 +387,11 @@ export function StudyLab() {
           ) : (
             <p className="text-correct">Every answer checked was right.</p>
           )}
-          <PublicLeaderboard revision={ranked.revision} />
+          <PublicLeaderboard
+            revision={ranked.revision}
+            playerName={playerName}
+            initialMode={state.mode === "survival" ? "survival" : "streak"}
+          />
         </section>
       ) : question ? (
         <>
@@ -570,6 +578,11 @@ export function StudyLab() {
               />
             ) : null}
           </section>
+          <PublicLeaderboard
+            revision={ranked.revision}
+            playerName={playerName}
+            initialMode={state.mode === "survival" ? "survival" : "streak"}
+          />
         </>
       ) : null}
     </LabShell>

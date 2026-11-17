@@ -13,13 +13,13 @@ Game power-ups cost earned HBOBS: **50/50** (40), **Double charge** (100), and *
 
 ## Public leaderboard
 
-Enter an optional nickname before starting a game. Complete the round, then choose **Post to leaderboard**. Everyone can view the same public board without signing in. The board refreshes every 15 seconds while visible, when returning to the tab, or with **Refresh**.
+Enter an optional nickname before starting a game. Your score syncs automatically after every checked answer, including during unfinished rounds. Everyone can view the same public board without signing in. The board refreshes every 3 seconds while visible, when returning to the tab, or with **Refresh**.
 
-- Separate top-50 rankings for each game, best posted score per nickname/mode.
+- Separate rankings for all named players for each game, best posted score per nickname/mode.
 - Shared persistent storage in a connected **private Vercel Blob store**; only the app's server can write it. All deployment domains use the same store and production namespace.
 - The backend signs anonymous browser sessions and round tickets, replays answer/purchase history against the actual question bank, and computes scores rather than accepting a browser-supplied number.
 - Conditional ETag writes retry concurrent submissions, and run IDs make repeated submissions idempotent.
-- Nicknames are public labels, not verified accounts. Matching nicknames share a public rank; browser identity and ranked wallet remain separate. Ranked HBOBS are banked when a finished round is posted. Leaving an unposted ranked round does not bank its currency.
+- Nicknames are public labels, not verified accounts. Matching nicknames share a public rank; browser identity and ranked wallet remain separate. Ranked HBOBS are banked incrementally after each synced answer; repeated or delayed checkpoints do not award currency twice.
 - Private practice uses browser-local earnings. Clearing browser storage resets those. Clearing cookies resets anonymous ranked identity; public scores remain.
 
 ## Development

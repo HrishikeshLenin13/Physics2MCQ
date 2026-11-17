@@ -106,7 +106,7 @@ export async function handleLeaderboard(request: Request): Promise<Response> {
         { headers: { ...headers, "Set-Cookie": cookie } },
       );
     }
-    if (body.action !== "finish" || typeof body.ticket !== "string")
+    if (!["finish", "checkpoint"].includes(body.action) || typeof body.ticket !== "string")
       throw new Error("Unknown leaderboard action.");
     const ticket = verify(body.ticket) as RunTicket;
     if (
@@ -119,7 +119,13 @@ export async function handleLeaderboard(request: Request): Promise<Response> {
     cleanPlayerName(ticket.name);
     for (let attempt = 0; attempt < 8; attempt++) {
       const current = await readBoard();
-      const result = recordRun(current.data, ticket, body.moves, Date.now());
+      const result = recordRun(
+        current.data,
+        ticket,
+        body.moves,
+        Date.now(),
+        body.action === "checkpoint",
+      );
       if (result.duplicate)
         return Response.json(
           {
